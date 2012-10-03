@@ -1,0 +1,8 @@
+name: SuperLogger
+main: me.zack6849.logger.main
+version: 1.0
+author: zack6849
+commands:
+    sl:
+        description: reloads superlogger 
+        usage: /sl reload

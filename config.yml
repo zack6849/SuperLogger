@@ -1,0 +1,7 @@
+log-commands: true
+log-chat: true
+log-join: true
+log-quit: true
+log-kick: true
+log-disallow: true
+auto-update: true
