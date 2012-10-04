@@ -13,8 +13,6 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class EventsHandler implements Listener {
-
-	String time = String.format("[%tD - %tT] ", new Date(), new Date());
 	main plugin;
 	public EventsHandler(main main) {
 		plugin = main;
@@ -23,6 +21,7 @@ public class EventsHandler implements Listener {
 	public void onCommand(PlayerCommandPreprocessEvent e){
 	boolean command = plugin.getConfig().getBoolean("log-commands");
 		if(command){
+			String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
 			plugin.logToFile("[COMMAND]" + time + e.getPlayer().getName() + " used command " +  e.getMessage());
 		}
 	}
@@ -30,6 +29,7 @@ public class EventsHandler implements Listener {
 	public void onChat(AsyncPlayerChatEvent e){
 		boolean chat = plugin.getConfig().getBoolean("log-chat");
 		if(chat){
+			String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
 			plugin.logToFile("[CHAT]" + time + e.getPlayer().getName() + " " +  e.getMessage());
 		}
 	}
@@ -39,6 +39,7 @@ public class EventsHandler implements Listener {
 		if(join){
 			String ip = e.getPlayer().getAddress().getAddress().toString();
 			String ipa = String.format(ip.replaceAll("/", ""));
+			String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
 			plugin.logToFile("[JOIN]" + time  + e.getPlayer().getName() + " joined the server from ip " + ipa);
 		}
 	}
@@ -46,6 +47,7 @@ public class EventsHandler implements Listener {
 	public void onKick(PlayerKickEvent e){
 		boolean kick = plugin.getConfig().getBoolean("log-kick");
 		if(kick){
+			String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
 			plugin.logToFile("[KICK]" + time + e.getPlayer().getName() + " was kicked from the server for " + e.getReason());
 		}
 	}
@@ -53,6 +55,7 @@ public class EventsHandler implements Listener {
 	public void onQuit(PlayerQuitEvent e ){
 		boolean quit = plugin.getConfig().getBoolean("log-quit");
 		if(quit){
+			String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
 			plugin.logToFile("[LEAVE]" + time + e.getPlayer().getName() + " left the server");
 		}
 	}
@@ -62,16 +65,20 @@ public class EventsHandler implements Listener {
 		if(disallow){
 			if(!e.getResult().equals(PlayerLoginEvent.Result.ALLOWED)){
 				if(e.getResult().equals(PlayerLoginEvent.Result.KICK_BANNED)){
+					String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
 					plugin.logToFile("[KICK-BANNED] " + time + e.getPlayer().getName() + " was disconnected from the server because they are banned.");
 				}
 				if(e.getResult().equals(PlayerLoginEvent.Result.KICK_WHITELIST)){
+					String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
 					plugin.logToFile("[KICK-WHITELIST]" + time + e.getPlayer().getName() + " was disconnected for not being whitelisted.");
 				}
 				if(e.getResult().equals(PlayerLoginEvent.Result.KICK_FULL)){
+					String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
 					plugin.logToFile("[KICK-FULL SERVER]" + time + e.getPlayer().getName() + " was disconnected because the server is full.");
 				}
 				if(e.getResult().equals(PlayerLoginEvent.Result.KICK_OTHER)){
-					plugin.logToFile("[KICK-UNKNOWN] " + e.getPlayer().getName() + " was disconnected for an unknown reason");
+					String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
+					plugin.logToFile("[KICK-UNKNOWN] " + time + e.getPlayer().getName() + " was disconnected for an unknown reason");
 				}
 			}
 		}

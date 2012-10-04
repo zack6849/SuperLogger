@@ -13,13 +13,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class main extends JavaPlugin {
 	Logger log;	
-	String time = String.format("[%tD - %tT] ", new Date(), new Date());
 	public void onEnable(){
 		this.log = getLogger();
 		getServer().getPluginManager().registerEvents(new EventsHandler(this),this);
 		boolean update = getConfig().getBoolean("auto-update");
-		logToFile("########## BEGIN LOGGING AT " + time + "#########");
 		saveResource("log.txt", false);
+		String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
+		logToFile("########## BEGIN LOGGING AT " + time + "#########");
 		File f = new File(getDataFolder(), "config.yml");
 		if(!f.exists()){
 			saveDefaultConfig();
@@ -35,6 +35,7 @@ public class main extends JavaPlugin {
 		}
 	}
 	public void onDisable(){
+		String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
 		String end = String.format("########## END LOGGING AT " + time + "#########");
 		logToFile(end);
 		logToFile("");
