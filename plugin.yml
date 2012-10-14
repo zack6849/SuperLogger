@@ -1,6 +1,6 @@
 name: SuperLogger
 main: me.zack6849.logger.main
-version: 1.0
+version: 1.2
 author: zack6849
 commands:
     sl:

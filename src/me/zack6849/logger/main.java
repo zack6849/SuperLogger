@@ -3,12 +3,15 @@ package me.zack6849.logger;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Date;
 import java.util.logging.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class main extends JavaPlugin {
@@ -17,10 +20,28 @@ public class main extends JavaPlugin {
 		this.log = getLogger();
 		getServer().getPluginManager().registerEvents(new EventsHandler(this),this);
 		boolean update = getConfig().getBoolean("auto-update");
-		saveResource("log.txt", false);
 		String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
-		logToFile("########## BEGIN LOGGING AT " + time + "#########");
 		File f = new File(getDataFolder(), "config.yml");
+		String logname = String.format("Log-%tm-%td-%ty.txt", new Date(), new Date(), new Date());
+		File log = new File(getDataFolder(), logname);
+		if(!log.exists()){
+			try {
+				log.getParentFile().mkdirs();
+				log.createNewFile();
+			} catch (IOException e) {
+				this.log.info("--------");
+				this.log.info("A SEVERE ERROR OCCURED");
+				this.log.info("PLEASE COPY AND PAST EVERYTHING ");
+				this.log.info("IN THIS REPORT AND SEND THE INFORMATION TO THE DEVELOPER!");
+				this.log.info("---------");
+				e.printStackTrace();
+				this.log.severe("========================");
+				this.log.severe("===END STACK TRACE====");
+				this.log.severe("========================");
+				
+			}
+		}
+		logToFile("########## BEGIN LOGGING AT " + time + "#########");
 		if(!f.exists()){
 			saveDefaultConfig();
 		}
@@ -46,7 +67,12 @@ public class main extends JavaPlugin {
 	{
 			try
 			{
-				File f = new File(getDataFolder(), "log.txt");
+				String logname = String.format("Log-%tm-%td-%ty.txt", new Date(), new Date(), new Date());
+				File f = new File(getDataFolder(), logname);
+				if(!f.exists()){
+					f.getParentFile().mkdirs();
+					f.createNewFile();
+				}
 				FileWriter fw = new FileWriter(f, true);
 
 				PrintWriter pw = new PrintWriter(fw);
@@ -86,4 +112,5 @@ public class main extends JavaPlugin {
 		}
 		return false;
 	}
-}	
+}
+

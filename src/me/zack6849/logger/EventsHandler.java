@@ -5,6 +5,7 @@ import java.util.Date;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -57,6 +58,14 @@ public class EventsHandler implements Listener {
 		if(quit){
 			String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
 			plugin.logToFile("[LEAVE]" + time + e.getPlayer().getName() + " left the server");
+		}
+	}
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onDeath(PlayerDeathEvent e){
+		boolean death = plugin.getConfig().getBoolean("log-death");
+		if(death){
+		String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
+		plugin.logToFile("[DEATH]" + time + e.getDeathMessage());
 		}
 	}
 	@EventHandler(priority = EventPriority.HIGHEST)
