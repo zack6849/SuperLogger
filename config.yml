@@ -5,6 +5,7 @@ log-quit: true
 log-kick: true
 log-death: true
 log-ip: true
-log-disallow: true
-old-logging: false
+log-disallowed-connections: true
+use-old-logging: false
+use-permissions: false
 auto-update: true

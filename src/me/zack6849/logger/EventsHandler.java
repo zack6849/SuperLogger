@@ -1,8 +1,5 @@
 package me.zack6849.logger;
 
-import java.util.Date;
-
-import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -13,7 +10,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
 
 public class EventsHandler implements Listener {
 	main plugin;
@@ -24,12 +20,18 @@ public class EventsHandler implements Listener {
 	public void onCommand(PlayerCommandPreprocessEvent e){
 		boolean command = plugin.getConfig().getBoolean("log-commands");
 		if(command){
-			if(!e.getPlayer().hasPermission("superlogger.bypass.command")){
-				String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
-				if(!plugin.oldlog){
-					plugin.logCommand("[COMMAND]" + time + e.getPlayer().getName() + " used command " +  e.getMessage());
+			if(main.permissions){
+				if(!e.getPlayer().hasPermission("superlogger.bypass.command")){
+					if(!main.oldlog){
+						plugin.log(main.commands , main.getTime() +"[COMMAND] "+ e.getPlayer().getName() + " used command " +  e.getMessage());
+					}
+					plugin.logToFile(main.getTime() + "[COMMAND] " + e.getPlayer().getName() + " used command " +  e.getMessage());
 				}
-				plugin.logToFile("[COMMAND]" + time + e.getPlayer().getName() + " used command " +  e.getMessage());
+			}else{
+				if(!main.oldlog){
+					plugin.log(main.commands , main.getTime() +"[COMMAND] "+ e.getPlayer().getName() + " used command " +  e.getMessage());
+				}
+				plugin.logToFile(main.getTime() + "[COMMAND] " + e.getPlayer().getName() + " used command " +  e.getMessage());
 			}
 		}
 	}
@@ -37,12 +39,18 @@ public class EventsHandler implements Listener {
 	public void onChat(AsyncPlayerChatEvent e){
 		boolean chat = plugin.getConfig().getBoolean("log-chat");
 		if(chat){
-			if(!e.getPlayer().hasPermission("superlogger.bypass.chat")){
-				String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
-				if(!plugin.oldlog){
-					plugin.logChat("[CHAT]" + time + e.getPlayer().getName() + " " +  e.getMessage());	
+			if(main.permissions){
+				if(!e.getPlayer().hasPermission("superlogger.bypass.chat")){
+					if(!main.oldlog){
+						plugin.log(main.chat, main.getTime()+ "[CHAT] <" + e.getPlayer().getName() + "> " +  e.getMessage());	
+					}
+					plugin.logToFile(main.getTime() + "[CHAT] <" + e.getPlayer().getName() + "> " +  e.getMessage());
 				}
-				plugin.logToFile("[CHAT]" + time + e.getPlayer().getName() + " " +  e.getMessage());
+			}else{
+				if(!main.oldlog){
+					plugin.log(main.chat, main.getTime()+ "[CHAT] <" + e.getPlayer().getName() + "> " +  e.getMessage());	
+				}
+				plugin.logToFile(main.getTime() + "[CHAT] <" + e.getPlayer().getName() + "> " +  e.getMessage());
 			}
 		}
 	}
@@ -51,21 +59,40 @@ public class EventsHandler implements Listener {
 		boolean join = plugin.getConfig().getBoolean("log-join");
 		boolean ipb = plugin.getConfig().getBoolean("log-ip");
 		if(join){
-			if(!e.getPlayer().hasPermission("superlogger.bypass.connection")){
-				String ip = e.getPlayer().getAddress().getAddress().toString();
-				String ipa = String.format(ip.replaceAll("/", ""));
-				String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
-				if(!plugin.oldlog){
-					if(ipb){
-						plugin.logJoin("[JOIN]" + time  + e.getPlayer().getName() + " joined the server from ip " + ipa);
+			if(main.permissions){
+				if(!e.getPlayer().hasPermission("superlogger.bypass.connection")){
+					String ip = e.getPlayer().getAddress().getAddress().toString().replaceAll("/", "");
+					if(!main.oldlog){
+						if(ipb){
+							plugin.log(main.connections ,main.getTime() + "[JOIN] "  + e.getPlayer().getName() + " joined the server from ip " + ip);
+							plugin.logToFile( main.getTime() +"[JOIN] " +e.getPlayer().getName() + " joined the server from ip " + ip);
+						}else{
+							plugin.log(main.connections , main.getTime() + "[JOIN] "  + e.getPlayer().getName() + " joined the server from ip " + ip);
+							plugin.logToFile(main.getTime() + "[JOIN] "  + e.getPlayer().getName() + " joined the server");
+						}
 					}else{
-						plugin.logJoin("[JOIN]" + time  + e.getPlayer().getName() + " joined the server");
+						if(ipb){
+							plugin.logToFile( main.getTime() + "[JOIN] " +e.getPlayer().getName() + " joined the server from ip " + ip);
+						}else{
+							plugin.logToFile(main.getTime() + "[JOIN] " + e.getPlayer().getName() + " joined the server");
+						}
+					}
+				}
+			}else{
+				String ip = e.getPlayer().getAddress().getAddress().toString().replaceAll("/", "");
+				if(!main.oldlog){
+					if(ipb){
+						plugin.log(main.connections ,main.getTime() + "[JOIN] "  + e.getPlayer().getName() + " joined the server from ip " + ip);
+						plugin.logToFile( main.getTime() +"[JOIN] " +e.getPlayer().getName() + " joined the server from ip " + ip);
+					}else{
+						plugin.log(main.connections , main.getTime() + "[JOIN] "  + e.getPlayer().getName() + " joined the server from ip " + ip);
+						plugin.logToFile(main.getTime() + "[JOIN] "  + e.getPlayer().getName() + " joined the server");
 					}
 				}else{
 					if(ipb){
-						plugin.logJoin("[JOIN]" + time  + e.getPlayer().getName() + " joined the server from ip " + ipa);
+						plugin.logToFile( main.getTime() + "[JOIN] " +e.getPlayer().getName() + " joined the server from ip " + ip);
 					}else{
-						plugin.logJoin("[JOIN]" + time  + e.getPlayer().getName() + " joined the server");
+						plugin.logToFile(main.getTime() + "[JOIN] " + e.getPlayer().getName() + " joined the server");
 					}
 				}
 			}
@@ -75,12 +102,18 @@ public class EventsHandler implements Listener {
 	public void onKick(PlayerKickEvent e){
 		boolean kick = plugin.getConfig().getBoolean("log-kick");
 		if(kick){
-			if(!e.getPlayer().hasPermission("superlogger.bypass.connection")){
-				String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
-				if(!plugin.oldlog){
-					plugin.logJoin("[KICK]" + time + e.getPlayer().getName() + " was kicked from the server for " + e.getReason());	
+			if(main.permissions){
+				if(!e.getPlayer().hasPermission("superlogger.bypass.connection")){
+					if(!main.oldlog){
+						plugin.log(main.connections,  main.getTime() + "[KICK]" + e.getPlayer().getName() + " was kicked from the server for " + e.getReason());	
+					}
+					plugin.logToFile(main.getTime() +"[KICK] " +  e.getPlayer().getName() + " was kicked from the server for " + e.getReason());
 				}
-				plugin.logToFile("[KICK]" + time + e.getPlayer().getName() + " was kicked from the server for " + e.getReason());
+			}else{
+				if(!main.oldlog){
+					plugin.log(main.connections,  main.getTime() + "[KICK]" + e.getPlayer().getName() + " was kicked from the server for " + e.getReason());	
+				}
+				plugin.logToFile(main.getTime() +"[KICK] " +  e.getPlayer().getName() + " was kicked from the server for " + e.getReason());
 			}
 		}
 	}
@@ -88,11 +121,17 @@ public class EventsHandler implements Listener {
 	public void onQuit(PlayerQuitEvent e ){
 		boolean quit = plugin.getConfig().getBoolean("log-quit");
 		if(quit){
-			if(!e.getPlayer().hasPermission("superlogger.bypass.connection")){
-				String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
-				plugin.logToFile("[LEAVE]" + time + e.getPlayer().getName() + " left the server");
-				if(!plugin.oldlog){
-					plugin.logJoin("[LEAVE]" + time + e.getPlayer().getName() + " left the server");
+			if(main.permissions){
+				if(!e.getPlayer().hasPermission("superlogger.bypass.connection")){
+					plugin.logToFile(main.getTime() + "[LEAVE] " +  e.getPlayer().getName() + " left the server");
+					if(!main.oldlog){
+						plugin.log(main.connections, main.getTime() + "[LEAVE] " +  e.getPlayer().getName() + " left the server");
+					}
+				}
+			}else{
+				plugin.logToFile(main.getTime() + "[LEAVE] " +  e.getPlayer().getName() + " left the server");
+				if(!main.oldlog){
+					plugin.log(main.connections, main.getTime() + "[LEAVE] " +  e.getPlayer().getName() + " left the server");
 				}
 			}
 		}
@@ -100,46 +139,49 @@ public class EventsHandler implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onDeath(PlayerDeathEvent e){
 		boolean death = plugin.getConfig().getBoolean("log-death");
-		if(death){
-			String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
-			plugin.logToFile("[DEATH]" + time + e.getDeathMessage());
-			if(!plugin.oldlog){
-				plugin.logDeath("[DEATH]" + time + e.getDeathMessage());	
+		if(death){		
+			if(!e.getEntity().hasPermission("superlogger.bypass.death")){
+				plugin.logToFile(main.getTime() + "[DEATH] " +  e.getDeathMessage());
+				if(!main.oldlog){
+					plugin.log(main.death,  main.getTime() +"[DEATH] " +  e.getDeathMessage());	
+				}
+			}else{
+				plugin.logToFile(main.getTime() + "[DEATH] " +  e.getDeathMessage());
+				if(!main.oldlog){
+					plugin.log(main.death,  main.getTime() +"[DEATH] " +  e.getDeathMessage());	
+				}
 			}
 		}
 	}
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onDisaalow(PlayerLoginEvent e){
-		boolean disallow = plugin.getConfig().getBoolean("log-disallow");
+		boolean disallow = plugin.getConfig().getBoolean("log-disallowed-connections");
 		if(disallow){
 			if(!e.getResult().equals(PlayerLoginEvent.Result.ALLOWED)){
 				if(e.getResult().equals(PlayerLoginEvent.Result.KICK_BANNED)){
-					String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
-					plugin.logToFile("[KICK-BANNED] " + time + e.getPlayer().getName() + " was disconnected from the server because they are banned.");
-					if(!plugin.oldlog){
-						plugin.logJoin("[KICK-BANNED] " + time + e.getPlayer().getName() + " was disconnected from the server because they are banned.");
+					plugin.logToFile(main.getTime() + "[KICK-BANNED] " +e.getPlayer().getName() + " was disconnected from the server because they are banned.");
+					if(!main.oldlog){
+						plugin.log(main.connections, main.getTime() + "[KICK-BANNED] " +  e.getPlayer().getName() + " was disconnected from the server because they are banned.");
 					}
 				}
 				if(e.getResult().equals(PlayerLoginEvent.Result.KICK_WHITELIST)){
-					String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
-					if(!plugin.oldlog){
-						plugin.logJoin("[KICK-WHITELIST]" + time + e.getPlayer().getName() + " was disconnected for not being whitelisted.");
+					if(!main.oldlog){
+						plugin.log(main.connections,main.getTime() +  "[KICK-WHITELIST] " + e.getPlayer().getName() + " was disconnected for not being whitelisted.");
 					}
-					plugin.logToFile("[KICK-WHITELIST]" + time + e.getPlayer().getName() + " was disconnected for not being whitelisted.");
+					plugin.logToFile(main.getTime() + "[KICK-WHITELIST] " + e.getPlayer().getName() + " was disconnected for not being whitelisted.");
 				}
 				if(e.getResult().equals(PlayerLoginEvent.Result.KICK_FULL)){
-					String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
-					if(!plugin.oldlog){
-						plugin.logJoin("[KICK-FULL SERVER]" + time + e.getPlayer().getName() + " was disconnected because the server is full.");
+					if(!main.oldlog){
+						plugin.log(main.connections, main.getTime() + "[KICK-FULL SERVER] " + e.getPlayer().getName() + " was disconnected because the server is full.");
 					}
-					plugin.logToFile("[KICK-FULL SERVER]" + time + e.getPlayer().getName() + " was disconnected because the server is full.");
+					plugin.logToFile(main.getTime() + "[KICK-FULL SERVER] " + e.getPlayer().getName() + " was disconnected because the server is full.");
 				}
 				if(e.getResult().equals(PlayerLoginEvent.Result.KICK_OTHER)){
-					String time = String.format("[%tm/%td/%ty - %tH:%tM:%tS] ", new Date(), new Date(),new Date(),new Date(),new Date(),new Date());
-					if(!plugin.oldlog){
-						plugin.logJoin("[KICK-UNKNOWN] " + time + e.getPlayer().getName() + " was disconnected for an unknown reason");	
+
+					if(!main.oldlog){
+						plugin.log(main.connections,  main.getTime() + "[KICK-UNKNOWN] "  + e.getPlayer().getName() + " was disconnected for an unknown reason");	
 					}
-					plugin.logToFile("[KICK-UNKNOWN] " + time + e.getPlayer().getName() + " was disconnected for an unknown reason");
+					plugin.logToFile( main.getTime() +"[KICK-UNKNOWN] " + e.getPlayer().getName() + " was disconnected for an unknown reason");
 				}
 			}
 		}
