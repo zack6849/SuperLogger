@@ -5,7 +5,12 @@ log-quit: true
 log-kick: true
 log-death: true
 log-ip: true
+log-death-location: true
 log-disallowed-connections: true
 use-old-logging: false
 use-permissions: false
 auto-update: true
+notify-update: true
+filters:
+  - 'login'
+  - 'register'

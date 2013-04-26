@@ -1,5 +1,8 @@
 package me.zack6849.logger;
 
+import me.zack6849.logger.Updater.UpdateResult;
+
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -20,18 +23,20 @@ public class EventsHandler implements Listener {
 	public void onCommand(PlayerCommandPreprocessEvent e){
 		boolean command = plugin.getConfig().getBoolean("log-commands");
 		if(command){
-			if(main.permissions){
-				if(!e.getPlayer().hasPermission("superlogger.bypass.command")){
+			if(!isFiltered(e.getMessage())){
+				if(main.permissions){
+					if(!e.getPlayer().hasPermission("superlogger.bypass.command")){
+						if(!main.oldlog){
+							plugin.log(main.commands , main.getTime() +"[COMMAND] "+ e.getPlayer().getName() + " used command " +  e.getMessage());
+						}
+						plugin.logToFile(main.getTime() + "[COMMAND] " + e.getPlayer().getName() + " used command " +  e.getMessage());
+					}
+				}else{
 					if(!main.oldlog){
 						plugin.log(main.commands , main.getTime() +"[COMMAND] "+ e.getPlayer().getName() + " used command " +  e.getMessage());
 					}
 					plugin.logToFile(main.getTime() + "[COMMAND] " + e.getPlayer().getName() + " used command " +  e.getMessage());
 				}
-			}else{
-				if(!main.oldlog){
-					plugin.log(main.commands , main.getTime() +"[COMMAND] "+ e.getPlayer().getName() + " used command " +  e.getMessage());
-				}
-				plugin.logToFile(main.getTime() + "[COMMAND] " + e.getPlayer().getName() + " used command " +  e.getMessage());
 			}
 		}
 	}
@@ -42,7 +47,7 @@ public class EventsHandler implements Listener {
 			if(main.permissions){
 				if(!e.getPlayer().hasPermission("superlogger.bypass.chat")){
 					if(!main.oldlog){
-						plugin.log(main.chat, main.getTime()+ "[CHAT] <" + e.getPlayer().getName() + "> " +  e.getMessage());	
+						plugin.log(main.chat, main.getTime()+ "[CHAT] <" + e.getPlayer().getName() + "> " +  e.getMessage());
 					}
 					plugin.logToFile(main.getTime() + "[CHAT] <" + e.getPlayer().getName() + "> " +  e.getMessage());
 				}
@@ -58,6 +63,16 @@ public class EventsHandler implements Listener {
 	public void onJoin(PlayerJoinEvent e){
 		boolean join = plugin.getConfig().getBoolean("log-join");
 		boolean ipb = plugin.getConfig().getBoolean("log-ip");
+	/*	UpdateResult res = plugin.updater.getResult();
+		if(plugin.getConfig().getBoolean("notify-update")){
+			if(res != null && res == UpdateResult.UPDATE_AVAILABLE){
+				if(e.getPlayer().isOp() || e.getPlayer().hasPermission("superlogger.update.notify")){
+					e.getPlayer().sendMessage(ChatColor.GREEN + "[" + ChatColor.GOLD + "SuperLogger" + ChatColor.YELLOW + "]" + ChatColor.GREEN + " An update is available for LockDown!");
+					e.getPlayer().sendMessage(ChatColor.GREEN + "New version: " + ChatColor.GREEN + main.updater.getLatestVersionString());
+					e.getPlayer().sendMessage(ChatColor.GREEN + "Current version: " + ChatColor.GREEN + plugin.getDescription().getVersion());
+				}
+			}
+		}*/
 		if(join){
 			if(main.permissions){
 				if(!e.getPlayer().hasPermission("superlogger.bypass.connection")){
@@ -139,22 +154,22 @@ public class EventsHandler implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onDeath(PlayerDeathEvent e){
 		boolean death = plugin.getConfig().getBoolean("log-death");
+		boolean location = plugin.getConfig().getBoolean("log-death-location");
+		String info = main.getTime() + "[DEATH] " +  e.getDeathMessage();
 		if(death){		
 			if(!e.getEntity().hasPermission("superlogger.bypass.death")){
-				plugin.logToFile(main.getTime() + "[DEATH] " +  e.getDeathMessage());
-				if(!main.oldlog){
-					plugin.log(main.death,  main.getTime() +"[DEATH] " +  e.getDeathMessage());	
+				if(location){
+					info += " at (" + e.getEntity().getLocation().getBlockX() + ", " + e.getEntity().getLocation().getBlockY() + ", " + e.getEntity().getLocation().getBlockZ() +") in world " + e.getEntity().getWorld().getName();
 				}
-			}else{
-				plugin.logToFile(main.getTime() + "[DEATH] " +  e.getDeathMessage());
 				if(!main.oldlog){
-					plugin.log(main.death,  main.getTime() +"[DEATH] " +  e.getDeathMessage());	
+					plugin.log(main.death, info);		
 				}
+				plugin.logToFile(info);
 			}
 		}
 	}
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onDisaalow(PlayerLoginEvent e){
+	public void onDisalow(PlayerLoginEvent e){
 		boolean disallow = plugin.getConfig().getBoolean("log-disallowed-connections");
 		if(disallow){
 			if(!e.getResult().equals(PlayerLoginEvent.Result.ALLOWED)){
@@ -185,5 +200,16 @@ public class EventsHandler implements Listener {
 				}
 			}
 		}
+	}	
+	public boolean isFiltered(String s){
+		boolean flag = false;
+		String msg = s.split(" ")[0].toLowerCase().replaceFirst("/","");
+		for(String s1 : main.blocked){
+			if(msg.startsWith(s1)){
+				flag = true;
+				break;
+			}
+		}
+		return flag;
 	}
 }
