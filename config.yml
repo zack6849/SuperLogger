@@ -11,6 +11,10 @@ use-old-logging: false
 use-permissions: false
 auto-update: true
 notify-update: true
+use-command-whitelist: true
+whitelist:
+  - 'say'
+  - 'tp'
 filters:
   - 'login'
   - 'register'

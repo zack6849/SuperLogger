@@ -2,6 +2,7 @@ package me.zack6849.logger;
 
 import me.zack6849.logger.Updater.UpdateResult;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -16,26 +17,46 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class EventsHandler implements Listener {
 	main plugin;
+	public static boolean debug = true;
 	public EventsHandler(main main) {
 		plugin = main;
 	}
 	@EventHandler
 	public void onCommand(PlayerCommandPreprocessEvent e){
 		boolean command = plugin.getConfig().getBoolean("log-commands");
+		boolean whitelist = plugin.getConfig().getBoolean("use-command-whitelist");
 		if(command){
 			if(!isFiltered(e.getMessage())){
 				if(main.permissions){
 					if(!e.getPlayer().hasPermission("superlogger.bypass.command")){
+						if(whitelist){							
+							if(isWhitelisted(e.getMessage())){
+								if(!main.oldlog){
+									plugin.log(main.commands , main.getTime() +"[COMMAND] "+ e.getPlayer().getName() + " used command " +  e.getMessage());
+								}
+								plugin.logToFile(main.getTime() + "[COMMAND] " + e.getPlayer().getName() + " used command " +  e.getMessage());
+							}
+						}else{
+							if(!main.oldlog){
+								plugin.log(main.commands , main.getTime() +"[COMMAND] "+ e.getPlayer().getName() + " used command " +  e.getMessage());
+							}
+							plugin.logToFile(main.getTime() + "[COMMAND] " + e.getPlayer().getName() + " used command " +  e.getMessage());
+						}
+					}
+				}else{
+					if(whitelist){						
+						if(isWhitelisted(e.getMessage())){
+							if(!main.oldlog){
+								plugin.log(main.commands , main.getTime() +"[COMMAND] "+ e.getPlayer().getName() + " used command " +  e.getMessage());
+							}
+							plugin.logToFile(main.getTime() + "[COMMAND] " + e.getPlayer().getName() + " used command " +  e.getMessage());
+						}
+					}else{
 						if(!main.oldlog){
 							plugin.log(main.commands , main.getTime() +"[COMMAND] "+ e.getPlayer().getName() + " used command " +  e.getMessage());
 						}
 						plugin.logToFile(main.getTime() + "[COMMAND] " + e.getPlayer().getName() + " used command " +  e.getMessage());
 					}
-				}else{
-					if(!main.oldlog){
-						plugin.log(main.commands , main.getTime() +"[COMMAND] "+ e.getPlayer().getName() + " used command " +  e.getMessage());
-					}
-					plugin.logToFile(main.getTime() + "[COMMAND] " + e.getPlayer().getName() + " used command " +  e.getMessage());
 				}
 			}
 		}
@@ -205,6 +226,17 @@ public class EventsHandler implements Listener {
 		boolean flag = false;
 		String msg = s.split(" ")[0].toLowerCase().replaceFirst("/","");
 		for(String s1 : main.blocked){
+			if(msg.startsWith(s1)){
+				flag = true;
+				break;
+			}
+		}
+		return flag;
+	}
+	public boolean isWhitelisted(String s){
+		boolean flag = false;
+		String msg = s.split(" ")[0].toLowerCase().replaceFirst("/","");
+		for(String s1 : main.whitelist){
 			if(msg.startsWith(s1)){
 				flag = true;
 				break;

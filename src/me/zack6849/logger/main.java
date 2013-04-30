@@ -27,6 +27,7 @@ public class main extends JavaPlugin {
 	public static File logfile;
 	public static File[] allfiles = new File[5];
 	public static List<String> blocked = new ArrayList<String>();
+	public static List<String> whitelist = new ArrayList<String>();
 	public static Updater updater;
 	@Override
 	public void onLoad(){
@@ -67,6 +68,10 @@ public class main extends JavaPlugin {
 			blocked.clear();
 			for(String s : getConfig().getStringList("filters")){
 				blocked.add(s.toLowerCase());
+			}
+			whitelist.clear();
+			for(String s : getConfig().getStringList("whitelist")){
+				whitelist.add(s.toLowerCase());
 			}
 			String begin = "########## BEGIN LOGGING AT " + getTime() + "#########";
 			if(oldlog){
