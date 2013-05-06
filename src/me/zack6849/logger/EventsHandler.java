@@ -226,7 +226,7 @@ public class EventsHandler implements Listener {
 		boolean flag = false;
 		String msg = s.split(" ")[0].toLowerCase().replaceFirst("/","");
 		for(String s1 : main.blocked){
-			if(msg.startsWith(s1)){
+			if(msg.equalsIgnoreCase(s1)){
 				flag = true;
 				break;
 			}
@@ -237,7 +237,7 @@ public class EventsHandler implements Listener {
 		boolean flag = false;
 		String msg = s.split(" ")[0].toLowerCase().replaceFirst("/","");
 		for(String s1 : main.whitelist){
-			if(msg.startsWith(s1)){
+			if(msg.equalsIgnoreCase(s1)){
 				flag = true;
 				break;
 			}

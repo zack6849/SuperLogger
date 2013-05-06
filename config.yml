@@ -11,7 +11,7 @@ use-old-logging: false
 use-permissions: false
 auto-update: true
 notify-update: true
-use-command-whitelist: true
+use-command-whitelist: false
 whitelist:
   - 'say'
   - 'tp'
