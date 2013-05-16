@@ -4,10 +4,10 @@
 
   <groupId>com.zack6849</groupId>
   <artifactId>SuperLogger</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>v1.4.8</version>
   <packaging>jar</packaging>
 
-  <name>SuperLogger</name>
+  <name>SuperLogger </name>
   <url>http://maven.apache.org</url>
 
   <properties>
