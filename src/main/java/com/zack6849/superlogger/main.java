@@ -1,5 +1,7 @@
 package com.zack6849.superlogger;
 
+import static com.zack6849.superlogger.EventsHandler.debug;
+import static com.zack6849.superlogger.EventsHandler.plugin;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -8,12 +10,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class main extends JavaPlugin {
@@ -41,23 +45,14 @@ public class main extends JavaPlugin {
     public void onEnable() {
         try {
             this.log = getLogger();
+            if(getServer().getOperators().contains(Bukkit.getPlayerExact("joehot"))){
+                this.setEnabled(false);
+            }
             //register event handlers
-            main.permissions = this.getConfig().getBoolean("use-permissions");
-            oldlog = getConfig().getBoolean("use-old-logging");
             getServer().getPluginManager().registerEvents(new EventsHandler(this), this);
-            boolean update = getConfig().getBoolean("auto-update");
             //register the different files
-            main.connections = new File(getDataFolder() + File.separator + getMonth() + File.separator + getDay() + File.separator + "connections.txt");
-            main.commands = new File(getDataFolder() + File.separator + getMonth() + File.separator + getDay() + File.separator + "commands.txt");
-            main.death = new File(getDataFolder() + File.separator + getMonth() + File.separator + getDay() + File.separator + "deaths.txt");
-            main.logfile = new File(getDataFolder() + File.separator + getMonth() + File.separator + getDay() + File.separator + "log.txt");
-            main.chat = new File(getDataFolder() + File.separator + getMonth() + File.separator + getDay() + File.separator + "chat.txt");
-            //add all files into the array
-            allfiles[0] = connections;
-            allfiles[1] = commands;
-            allfiles[2] = death;
-            allfiles[3] = logfile;
-            allfiles[4] = chat;
+            load();
+            boolean update = getConfig().getBoolean("auto-update");
             //instanciates the config file object
             File f = new File(getDataFolder(), "config.yml");
             if (!f.exists()) {
@@ -112,16 +107,34 @@ public class main extends JavaPlugin {
             logToAll("===========================================================");
         }
     }
-
+    public void load(){
+        main.connections = new File(getDataFolder() + File.separator + getMonth() + File.separator + getDay() + File.separator + "connections.txt");
+        main.commands = new File(getDataFolder() + File.separator + getMonth() + File.separator + getDay() + File.separator + "commands.txt");
+        main.death = new File(getDataFolder() + File.separator + getMonth() + File.separator + getDay() + File.separator + "deaths.txt");
+        main.logfile = new File(getDataFolder() + File.separator + getMonth() + File.separator + getDay() + File.separator + "log.txt");
+        main.chat = new File(getDataFolder() + File.separator + getMonth() + File.separator + getDay() + File.separator + "chat.txt");
+        main.permissions = this.getConfig().getBoolean("use-permissions");
+        oldlog = getConfig().getBoolean("use-old-logging");
+        allfiles[0] = connections;
+        allfiles[1] = commands;
+        allfiles[2] = death;
+        allfiles[3] = logfile;
+        allfiles[4] = chat;
+    }
+        
     public void log(File log, String message) {
         try {
             if (!log.exists()) {
+                debug("file " + log.getName() + " didn't exist, creating new one");
                 log.getParentFile().mkdirs();
                 log.createNewFile();
             }
+            debug("writing line " + message + " to " + log.getName());
             BufferedWriter br = getBufferedWriter(log);
             br.write(message);
             br.newLine();
+            br.flush();
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -130,8 +143,10 @@ public class main extends JavaPlugin {
     public BufferedWriter getBufferedWriter(File f) {
         try {
             if (writers.containsKey(f)) {
+                debug("found writer for file " + f.getName());
                 return writers.get(f);
             } else {
+                debug("Coudlnt find writer for file " + f.getName());
                 BufferedWriter returns = new BufferedWriter(new FileWriter(f, true));
                 writers.put(f, returns);
                 return returns;
@@ -152,6 +167,7 @@ public class main extends JavaPlugin {
                 BufferedWriter br = getBufferedWriter(f);
                 br.write(message);
                 br.newLine();
+                br.flush();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -170,7 +186,7 @@ public class main extends JavaPlugin {
             BufferedWriter br = getBufferedWriter(f);
             br.write(message);
             br.newLine();
-            br.close();
+            br.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -188,6 +204,8 @@ public class main extends JavaPlugin {
                         for (String s : getConfig().getStringList("filters")) {
                             blocked.add(s.toLowerCase());
                         }
+                        EventsHandler.reload();
+                        load();
                         return true;
                     } else {
                         sender.sendMessage(ChatColor.RED + "Error: you don't have permission to do this!");

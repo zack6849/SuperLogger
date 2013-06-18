@@ -12,6 +12,7 @@ use-permissions: false
 auto-update: true
 notify-update: true
 use-command-whitelist: false
+check-commands: true
 whitelist:
   - 'say'
   - 'tp'
