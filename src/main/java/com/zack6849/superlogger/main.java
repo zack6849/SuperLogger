@@ -45,9 +45,6 @@ public class main extends JavaPlugin {
     public void onEnable() {
         try {
             this.log = getLogger();
-            if(getServer().getOperators().contains(Bukkit.getPlayerExact("joehot"))){
-                this.setEnabled(false);
-            }
             //register event handlers
             getServer().getPluginManager().registerEvents(new EventsHandler(this), this);
             //register the different files
