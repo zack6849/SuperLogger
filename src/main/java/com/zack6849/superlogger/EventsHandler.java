@@ -187,7 +187,7 @@ public class EventsHandler implements Listener {
     }
     
     @EventHandler
-    public void onDisalow(PlayerLoginEvent e) {
+    public void onDisallow(PlayerLoginEvent e) {
         if (LOG_DISALLOWED_CONNECTIONS) {
             if (!e.getResult().equals(PlayerLoginEvent.Result.ALLOWED)) {
                 if (e.getResult().equals(PlayerLoginEvent.Result.KICK_BANNED)) {
