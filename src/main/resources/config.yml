@@ -1,0 +1,18 @@
+log:
+  commands: true
+  #do we check if a command is even a real command before we log it?
+  check-command-exists: false
+  chat: true
+  join: true
+  quit: true
+  kick: true
+  death: true
+  #do we log disallowed connections? (banned, not whitelisted, full server, etc)
+  failed-connections: true
+  player-ip: true
+  player-uuid: true
+  coordinates: true
+#a list of commands ignored by superlogger, for privacy reasons.
+blacklist:
+  - 'login'
+  - 'register'
