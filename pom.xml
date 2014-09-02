@@ -4,8 +4,8 @@
 
   <groupId>com.zack6849</groupId>
   <artifactId>SuperLogger</artifactId>
-  <version>v1.4.9</version>
-  <packaging>jar</packaging>
+    <version>v1.6</version>
+    <packaging>jar</packaging>
 
   <name>SuperLogger </name>
   <url>http://maven.apache.org</url>
