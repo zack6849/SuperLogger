@@ -32,6 +32,9 @@ public class Main extends JavaPlugin {
             getPluginLoader().disablePlugin(this);
         }
         this.loggers = new HashMap<String, LoggerAbstraction>();
+    }
+
+    public void loadSettings() {
         this.settings = new Settings();
         settings.setLogChat(getConfig().getBoolean("log.chat"));
         settings.setLogCommands(getConfig().getBoolean("log.commands"));
@@ -80,6 +83,7 @@ public class Main extends JavaPlugin {
                 if (args[0].equalsIgnoreCase("reload")) {
                     if (sender.hasPermission("sl.reload")) {
                         this.reloadConfig();
+                        loadSettings();
                         sender.sendMessage(ChatColor.GREEN + "Configuration file reloaded!");
                     }
                 }
