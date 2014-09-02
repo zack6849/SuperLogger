@@ -1,12 +1,9 @@
 package com.zack6849.superlogger;
 
-import com.zack649.superlogger.LoggingCategory;
-import com.zack649.superlogger.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 

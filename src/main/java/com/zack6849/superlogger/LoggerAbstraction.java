@@ -1,4 +1,4 @@
-package com.zack649.superlogger;
+package com.zack6849.superlogger;
 
 import java.io.BufferedWriter;
 import java.io.File;

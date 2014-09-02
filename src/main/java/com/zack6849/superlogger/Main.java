@@ -1,4 +1,4 @@
-package com.zack649.superlogger;
+package com.zack6849.superlogger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

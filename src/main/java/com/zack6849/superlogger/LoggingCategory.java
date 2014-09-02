@@ -1,4 +1,4 @@
-package com.zack649.superlogger;
+package com.zack6849.superlogger;
 
 /**
  * Created by zack6849 on 9/1/14.
