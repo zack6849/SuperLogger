@@ -1,0 +1,8 @@
+name: SuperLogger
+main: com.zack6849.superlogger.Main
+version: 1.6
+author: zack6849
+commands:
+  sl:
+    description: Superlogger Utility command
+    usage: /sl <version, reload>
