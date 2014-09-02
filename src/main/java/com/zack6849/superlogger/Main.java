@@ -88,22 +88,29 @@ public class Main extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equalsIgnoreCase("sl")) {
-            if (args.length > 1) {
+            if (args.length < 1) {
                 sender.sendMessage(ChatColor.RED + "Usage: /sl <version, reload>");
                 return true;
             }
-            if (args.length == 1) {
+            if (args.length >= 1) {
                 if (args[0].equalsIgnoreCase("version")) {
                     sender.sendMessage(ChatColor.YELLOW + "SuperLogger Version " + this.getDescription().getVersion() + " by " + this.getDescription().getAuthors().toString());
+                    return true;
                 }
                 if (args[0].equalsIgnoreCase("reload")) {
-                    if (sender.hasPermission("sl.reload")) {
-                        this.reloadConfig();
-                        loadSettings();
-                        sender.sendMessage(ChatColor.GREEN + "Configuration file reloaded!");
+                    if (!sender.hasPermission("sl.reload")) {
+                        sender.sendMessage(ChatColor.RED + "You don't have permission to do that!");
+                        return true;
                     }
+                    this.reloadConfig();
+                    loadSettings();
+                    sender.sendMessage(ChatColor.GREEN + "Configuration file reloaded!");
+                    return true;
                 }
             }
+            //i dont even think this would ever be called, but ok.
+            sender.sendMessage(ChatColor.RED + "Invalid syntax! /sl <version, reload>");
+            return true;
         }
         return false;
     }
