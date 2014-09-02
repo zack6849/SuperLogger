@@ -31,7 +31,7 @@ public enum LoggingCategory {
     private String name;
 
     LoggingCategory(String fileName) {
-        this.name = name;
+        this.name = fileName;
     }
 
     public String getFileName() {
