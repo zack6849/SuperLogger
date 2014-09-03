@@ -33,6 +33,7 @@ public class Settings {
     private boolean logPlayerUUID;
     private boolean useOldLogging;
     private boolean checkCommandExists;
+    private boolean autoUpdate;
     private Set<String> filteredCommands;
 
     public boolean isLogCommands() {
@@ -137,5 +138,13 @@ public class Settings {
 
     public void setFilteredCommands(Set<String> filteredCommands) {
         this.filteredCommands = filteredCommands;
+    }
+
+    public boolean isAutoUpdate() {
+        return autoUpdate;
+    }
+
+    public void setAutoUpdate(boolean autoUpdate) {
+        this.autoUpdate = autoUpdate;
     }
 }

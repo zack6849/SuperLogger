@@ -18,41 +18,54 @@
 
 package com.zack6849.superlogger;
 
+import net.gravitydevelopment.updater.Updater;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.Metrics;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Main extends JavaPlugin {
     private Logger logger;
     private Settings settings;
-    private HashMap<String, LoggerAbstraction> loggers;
+    private ConcurrentHashMap<String, LoggerAbstraction> loggers;
 
     @Override
     public void onEnable() {
+        this.logger = getLogger();
+        this.loggers = new ConcurrentHashMap<String, LoggerAbstraction>();
         saveDefaultConfig();
         loadSettings();
         getServer().getPluginManager().registerEvents(new EventListener(this), this);
-        if (this.getConfig().getConfigurationSection("log") == null) {
-            logger.log(Level.SEVERE, "Your configuration file is out of date, please generate a new one!");
-            logger.log(Level.INFO, "Disabling Superlogger...");
-            getPluginLoader().disablePlugin(this);
+        try {
+            Metrics metrics = new Metrics(this);
+            logger.log(Level.INFO, "Metrics Running <3");
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "There was an issue starting plugin metrics </3");
+            logger.log(Level.WARNING, e.getMessage());
+            e.printStackTrace();
         }
-        this.loggers = new HashMap<String, LoggerAbstraction>();
+        Updater updater = new Updater(this, 45448, this.getFile(), Updater.UpdateType.DEFAULT, true);
     }
 
     public void loadSettings() {
+        if (this.getConfig().getConfigurationSection("log") == null) {
+            logger.log(Level.SEVERE, "Your configuration file is out of date, please generate a new one!");
+            logger.log(Level.INFO, "Disabling SuperLogger...");
+            getPluginLoader().disablePlugin(this);
+        }
         this.settings = new Settings();
+        settings.setAutoUpdate(getConfig().getBoolean("auto-update"));
         settings.setLogChat(getConfig().getBoolean("log.chat"));
         settings.setLogCommands(getConfig().getBoolean("log.commands"));
         settings.setLogCoordinates(getConfig().getBoolean("log.coordinates"));
@@ -95,7 +108,7 @@ public class Main extends JavaPlugin {
             }
             if (args.length >= 1) {
                 if (args[0].equalsIgnoreCase("version")) {
-                    sender.sendMessage(ChatColor.YELLOW + "SuperLogger Version " + this.getDescription().getVersion() + " by " + this.getDescription().getAuthors().toString());
+                    sender.sendMessage(ChatColor.YELLOW + "SuperLogger Version " + this.getDescription().getVersion() + " by " + this.getDescription().getAuthors().toString().replace("[", "").replace("]", ""));
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("reload")) {
