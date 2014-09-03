@@ -96,15 +96,24 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
+    public void onJoin(final PlayerJoinEvent event) {
         if (plugin.getSettings().isUpdateNotify() && !plugin.getSettings().isAutoUpdate() && plugin.getUpdater().getResult() == Updater.UpdateResult.UPDATE_AVAILABLE && event.getPlayer().hasPermission("superlogger.update.notify")) {
-            event.getPlayer().sendMessage(ChatColor.GREEN + "An update for SuperLogger is available!");
-            event.getPlayer().sendMessage(ChatColor.GREEN + "New Version: " + plugin.getUpdater().getLatestName());
-            event.getPlayer().sendMessage(ChatColor.GREEN + "Link: " + plugin.shortenUrl(plugin.getUpdater().getLatestFileLink()));
-            event.getPlayer().sendMessage(ChatColor.YELLOW + "To disable this notification, change update-notify to false in the config!");
+            //for some stupid reason, sending those all at once upon player join causes the messages to come out of order, fuck you bukkit.
+            plugin.getServer().getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable() {
+                @Override
+                public void run() {
+                    event.getPlayer().sendMessage(ChatColor.YELLOW + "=====================================================");
+                    event.getPlayer().sendMessage(ChatColor.GREEN + "An update for SuperLogger is available!");
+                    event.getPlayer().sendMessage(ChatColor.GREEN + "New Version: " + plugin.getUpdater().getLatestName());
+                    event.getPlayer().sendMessage(ChatColor.GREEN + "Project Page: " + plugin.shortenUrl(plugin.getDescription().getWebsite()));
+                    event.getPlayer().sendMessage(ChatColor.GREEN + "Direct Link: " + plugin.shortenUrl(plugin.getUpdater().getLatestFileLink()));
+                    event.getPlayer().sendMessage(ChatColor.YELLOW + "To disable this notification, change update-notify to false.");
+                    event.getPlayer().sendMessage(ChatColor.YELLOW + "=====================================================");
+                }
+            }, 10L);
         }
 
-        if (!plugin.getSettings().isLogJoin() || event.getPlayer().hasPermission("superlogger.bypasss.connection")) {
+        if (!plugin.getSettings().isLogJoin() || event.getPlayer().hasPermission("superlogger.bypass.connection")) {
             plugin.debug("Ignoring " + event.getClass().getSimpleName());
             return;
         }

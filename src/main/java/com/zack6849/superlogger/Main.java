@@ -202,7 +202,7 @@ public class Main extends JavaPlugin {
     public LoggerAbstraction getFile(LoggingCategory category) {
         String filename = category.getFileName();
         if (!loggers.containsKey(filename)) {
-            getLogger().info("Creating new LoggerAbstraction for  LoggingCategory." + category.toString());
+            getLogger().info("Creating new LoggerAbstraction for LoggingCategory." + category.toString());
             LoggerAbstraction log = new LoggerAbstraction();
             try {
                 log.setFile(new File(getDataFolder() + File.separator + "logs" + File.separator + getMonth() + File.separator + getDay() + File.separator + filename));
