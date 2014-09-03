@@ -24,6 +24,7 @@ permissions:
     default: op
   superlogger.bypass.*:
     description: permission to bypass ALL logging
+    default: false
     children:
       superlogger.bypass.connection: true
       superlogger.bypass.chat: true
@@ -31,6 +32,7 @@ permissions:
       superlogger.bypass.command: true
   superlogger.*:
     description: super permission for superlogger, grants all permissions
+    default: false
     children:
       superlogger.bypass.*: true
       superlogger.update.notify: true

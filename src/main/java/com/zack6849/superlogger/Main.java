@@ -19,20 +19,17 @@
 package com.zack6849.superlogger;
 
 import net.gravitydevelopment.updater.Updater;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.io.*;
+import java.net.URL;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,12 +39,13 @@ public class Main extends JavaPlugin {
     private Settings settings;
     private ConcurrentHashMap<String, LoggerAbstraction> loggers;
     private Updater updater;
-    private boolean broken = false;
+
     @Override
     public void onEnable() {
         this.logger = getLogger();
         this.loggers = new ConcurrentHashMap<String, LoggerAbstraction>();
         saveDefaultConfig();
+        getConfig().setDefaults(new MemoryConfiguration());
         loadSettings();
         getServer().getPluginManager().registerEvents(new EventListener(this), this);
         try {
@@ -71,10 +69,37 @@ public class Main extends JavaPlugin {
     }
 
     public void loadSettings() {
-        if (this.getConfig().getConfigurationSection("log") == null) {
-            logger.severe("Your configuration file is out of date, please generate a new one!");
-            getPluginLoader().disablePlugin(this);
-            broken = true;
+        if (!getConfig().isConfigurationSection("log") | this.getConfig().getConfigurationSection("log") == null) {
+            //TODO: Clean this code up somehow?
+            logger.info("Doing one-time config conversion");
+            getConfig().set("auto-update", getConfig().getBoolean("auto-update"));
+            getConfig().set("update-notify", true);
+            getConfig().set("debug", false);
+            getConfig().set("log.commands", getConfig().getBoolean("log-commands"));
+            getConfig().set("log.check-command-exists", getConfig().getBoolean("check-commands"));
+            getConfig().set("log.chat", getConfig().getBoolean("log-chat"));
+            getConfig().set("log.join", getConfig().getBoolean("log-join"));
+            getConfig().set("log.quit", getConfig().getBoolean("log-quit"));
+            getConfig().set("log.kick", getConfig().getBoolean("log-kick"));
+            getConfig().set("log.death", getConfig().getBoolean("log-death"));
+            getConfig().set("log.failed-connections", getConfig().getBoolean("log-disallowed-connections"));
+            getConfig().set("log.player-ip", getConfig().getBoolean("log-ip"));
+            getConfig().set("log.player-uuid", true);
+            getConfig().set("log.coordinates", true);
+            getConfig().set("blacklist", getConfig().getStringList("filters"));
+
+            //remove old config nodes
+            List<String> oldpaths = Arrays.asList("log-commands log-chat log-join log-quit log-kick log-death log-ip log-death-location log-disallowed-connections use-old-logging use-permissions notify-update use-command-whitelist check-commands whitelist filters".split(" "));
+            for (String path : oldpaths) {
+                getConfig().set(path, null);
+            }
+            //save and reload config
+            try {
+                getConfig().save(new File(getDataFolder(), "config.yml"));
+                reloadConfig();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         this.settings = new Settings();
         settings.setDebug(getConfig().getBoolean("debug", true));
@@ -94,7 +119,18 @@ public class Main extends JavaPlugin {
         settings.setFilteredCommands(new HashSet<String>());
         for (String command : getConfig().getStringList("blacklist")) {
             //lowercase all commands so it's easier to check
-            settings.getFilteredCommands().add(command.toLowerCase());
+            settings.getFilteredCommands().add(StringUtils.deleteWhitespace(command));
+        }
+        if (getSettings().isLogPlayerUUID()) {
+            debug("UUID support is enabled, checking to see if server supports UUIDs");
+            double version = Double.valueOf(StringUtils.join(getServer().getVersion().split("\\(")[1].split("\\)")[0].split("MC: ")[1].split("\\."), ".", 0, 2));
+            debug("Found minecraft version " + version + " from version string " + getServer().getVersion());
+            //actual UUID support is only in minecraft 1.7+
+            if (version >= 1.7) {
+                logger.warning("Player UUID Logging is enabled, but your server version doesn't have it!");
+                logger.warning("Disabling UUID Logging..");
+                getSettings().setLogPlayerUUID(false);
+            }
         }
     }
 
@@ -141,6 +177,7 @@ public class Main extends JavaPlugin {
                     for (String line : getDebug()) {
                         logger.info(line);
                     }
+                    return true;
                 }
             }
             //i dont even think this would ever be called, but ok.
@@ -190,7 +227,7 @@ public class Main extends JavaPlugin {
 
     public List<String> getDebug() {
         List<String> lines = new ArrayList<String>();
-        lines.add(String.format("Running version %s with server version %s on %s %s %s", getDescription().getVersion(), getServer().getVersion(), System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch")));
+        lines.add(String.format("Running version %s with server version %s (%s) on %s %s %s", getDescription().getVersion(), getServer().getVersion(), getServer().getBukkitVersion(), System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch")));
         lines.add("Settings:");
         lines.add("Debug: " + settings.isDebug());
         lines.add("Auto-Update: " + settings.isAutoUpdate());
@@ -209,13 +246,9 @@ public class Main extends JavaPlugin {
         lines.add("\tLog Disallowed Connections: " + settings.isLogDisallowedConnections());
         lines.add("\tFiltered commands: ");
         for (String filter : settings.getFilteredCommands()) {
-            lines.add("\t\t - " + filter);
+            lines.add("\t   - " + filter);
         }
         return lines;
-    }
-
-    public boolean hasBrokenConfig() {
-        return broken;
     }
 
     public Updater getUpdater() {
@@ -236,5 +269,19 @@ public class Main extends JavaPlugin {
 
     private String getDay() {
         return String.format("%td", new Date());
+    }
+
+    public String shortenUrl(String longUrl) {
+        String shortened = null;
+        try {
+            URL url;
+            url = new URL("http://is.gd/create.php?format=simple&url=" + longUrl);
+            BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(url.openStream()));
+            shortened = bufferedreader.readLine();
+            bufferedreader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return shortened;
     }
 }

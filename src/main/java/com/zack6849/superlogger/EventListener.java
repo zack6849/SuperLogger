@@ -19,7 +19,6 @@
 package com.zack6849.superlogger;
 
 import net.gravitydevelopment.updater.Updater;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -40,6 +39,7 @@ public class EventListener implements Listener {
      */
     public void onChat(PlayerChatEvent event) {
         if (!plugin.getSettings().isLogChat() || event.getPlayer().hasPermission("superlogger.bypass.chat")) {
+            plugin.debug("Ignoring " + event.getClass().getSimpleName());
             return;
         }
         LoggingCategory category = plugin.getSettings().isUseOldLogging() ? LoggingCategory.ALL : LoggingCategory.CHAT;
@@ -66,10 +66,12 @@ public class EventListener implements Listener {
     public void onCommand(PlayerCommandPreprocessEvent event) {
         //if the plugin is supposed to be ignoring commands, or the command is filtered, ignore it.
         if (!plugin.getSettings().isLogCommands() || isFiltered(event.getMessage()) || event.getPlayer().hasPermission("superlogger.bypass.command")) {
+            plugin.debug("Ignoring " + event.getClass().getSimpleName());
             return;
         }
         //if we're supposed to make sure a command is real, and this one isn't, ignore it.
-        if (plugin.getSettings().isCheckCommandExists() && Bukkit.getPluginCommand(event.getMessage().split(" ")[0]) == null) {
+        if (plugin.getSettings().isCheckCommandExists() && plugin.getServer().getPluginCommand(event.getMessage().split(" ")[0]) == null) {
+            plugin.debug("Ignoring " + event.getClass().getSimpleName() + " because the command " + event.getMessage().split(" ")[0] + " wasn't real!");
             return;
         }
         //the relevant methods are literally the exact same as player chat, so copy paste! :D
@@ -95,16 +97,17 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        if (!plugin.getSettings().isLogJoin() || event.getPlayer().hasPermission("superlogger.bypasss.connection")) {
-            return;
-        }
         if (plugin.getSettings().isUpdateNotify() && !plugin.getSettings().isAutoUpdate() && plugin.getUpdater().getResult() == Updater.UpdateResult.UPDATE_AVAILABLE && event.getPlayer().hasPermission("superlogger.update.notify")) {
             event.getPlayer().sendMessage(ChatColor.GREEN + "An update for SuperLogger is available!");
             event.getPlayer().sendMessage(ChatColor.GREEN + "New Version: " + plugin.getUpdater().getLatestName());
-            event.getPlayer().sendMessage(ChatColor.GREEN + "Link: " + plugin.getUpdater().getLatestFileLink());
+            event.getPlayer().sendMessage(ChatColor.GREEN + "Link: " + plugin.shortenUrl(plugin.getUpdater().getLatestFileLink()));
             event.getPlayer().sendMessage(ChatColor.YELLOW + "To disable this notification, change update-notify to false in the config!");
         }
 
+        if (!plugin.getSettings().isLogJoin() || event.getPlayer().hasPermission("superlogger.bypasss.connection")) {
+            plugin.debug("Ignoring " + event.getClass().getSimpleName());
+            return;
+        }
         LoggingCategory category = plugin.getSettings().isUseOldLogging() ? LoggingCategory.ALL : LoggingCategory.JOIN;
         StringBuilder line = new StringBuilder();
         if (plugin.getSettings().isUseOldLogging()) {
@@ -129,7 +132,9 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerLoginEvent event) {
         //this permission check won't work on certain permission managers if i recall correctly.
+        plugin.debug("Boop.");
         if (!plugin.getSettings().isLogDisallowedConnections() || event.getPlayer().hasPermission("superlogger.bypass.connection")) {
+            plugin.debug("Ignoring " + event.getClass().getSimpleName());
             return;
         }
         LoggingCategory category = plugin.getSettings().isUseOldLogging() ? LoggingCategory.ALL : LoggingCategory.FAILED_LOGIN;
@@ -155,6 +160,7 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         if (!plugin.getSettings().isLogQuit() || event.getPlayer().hasPermission("superlogger.bypass.connection")) {
+            plugin.debug("Ignoring " + event.getClass().getSimpleName());
             return;
         }
         LoggingCategory category = plugin.getSettings().isUseOldLogging() ? LoggingCategory.ALL : LoggingCategory.QUIT;
@@ -181,6 +187,7 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerKick(PlayerKickEvent event) {
         if (!plugin.getSettings().isLogKick() || event.getPlayer().hasPermission("superlogger.bypass.connection")) {
+            plugin.debug("Ignoring " + event.getClass().getSimpleName());
             return;
         }
         LoggingCategory category = plugin.getSettings().isUseOldLogging() ? LoggingCategory.ALL : LoggingCategory.KICK;
@@ -207,6 +214,7 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         if (!plugin.getSettings().isLogDeath() || event.getEntity().hasPermission("superlogger.bypass.death")) {
+            plugin.debug("Ignoring " + event.getClass().getSimpleName());
             return;
         }
         LoggingCategory category = plugin.getSettings().isUseOldLogging() ? LoggingCategory.ALL : LoggingCategory.DEATH;
@@ -230,6 +238,6 @@ public class EventListener implements Listener {
     }
 
     public boolean isFiltered(String command) {
-        return plugin.getSettings().getFilteredCommands().contains(command.toLowerCase().split(" ")[0]);
+        return plugin.getSettings().getFilteredCommands().contains(command.toLowerCase().split(" ")[0].substring(1));
     }
 }
