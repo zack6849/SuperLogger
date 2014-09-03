@@ -29,8 +29,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,7 +41,8 @@ public class Main extends JavaPlugin {
     private Logger logger;
     private Settings settings;
     private ConcurrentHashMap<String, LoggerAbstraction> loggers;
-
+    private Updater updater;
+    private boolean broken = false;
     @Override
     public void onEnable() {
         this.logger = getLogger();
@@ -51,32 +54,43 @@ public class Main extends JavaPlugin {
             Metrics metrics = new Metrics(this);
             logger.log(Level.INFO, "Metrics Running <3");
         } catch (IOException e) {
-            logger.log(Level.WARNING, "There was an issue starting plugin metrics </3");
-            logger.log(Level.WARNING, e.getMessage());
+            logger.warning("There was an issue starting plugin metrics </3");
+            logger.warning(e.getMessage());
             e.printStackTrace();
         }
-        Updater updater = new Updater(this, 45448, this.getFile(), Updater.UpdateType.DEFAULT, true);
+        if (settings.isAutoUpdate()) {
+            updater = new Updater(this, 45448, this.getFile(), Updater.UpdateType.DEFAULT, true);
+        } else {
+            updater = new Updater(this, 45448, this.getFile(), Updater.UpdateType.NO_DOWNLOAD, true);
+        }
+        if (settings.isDebug()) {
+            for (String line : getDebug()) {
+                debug(line);
+            }
+        }
     }
 
     public void loadSettings() {
         if (this.getConfig().getConfigurationSection("log") == null) {
-            logger.log(Level.SEVERE, "Your configuration file is out of date, please generate a new one!");
-            logger.log(Level.INFO, "Disabling SuperLogger...");
+            logger.severe("Your configuration file is out of date, please generate a new one!");
             getPluginLoader().disablePlugin(this);
+            broken = true;
         }
         this.settings = new Settings();
-        settings.setAutoUpdate(getConfig().getBoolean("auto-update"));
-        settings.setLogChat(getConfig().getBoolean("log.chat"));
-        settings.setLogCommands(getConfig().getBoolean("log.commands"));
-        settings.setLogCoordinates(getConfig().getBoolean("log.coordinates"));
-        settings.setLogDeath(getConfig().getBoolean("log.death"));
-        settings.setLogJoin(getConfig().getBoolean("log.join"));
-        settings.setLogQuit(getConfig().getBoolean("log.quit"));
-        settings.setLogKick(getConfig().getBoolean("log.kick"));
-        settings.setLogDisallowedConnections(getConfig().getBoolean("log.failed-connections"));
-        settings.setLogPlayerIp(getConfig().getBoolean("log.player-ip"));
-        settings.setLogPlayerUUID(getConfig().getBoolean("log.player-uuid"));
-        settings.setCheckCommandExists(getConfig().getBoolean("log.check-command-exists"));
+        settings.setDebug(getConfig().getBoolean("debug", true));
+        settings.setAutoUpdate(getConfig().getBoolean("auto-update", true));
+        settings.setUpdateNotify(getConfig().getBoolean("update-notify", true));
+        settings.setLogChat(getConfig().getBoolean("log.chat", true));
+        settings.setLogCommands(getConfig().getBoolean("log.commands", true));
+        settings.setLogCoordinates(getConfig().getBoolean("log.coordinates", true));
+        settings.setLogDeath(getConfig().getBoolean("log.death", true));
+        settings.setLogJoin(getConfig().getBoolean("log.join", true));
+        settings.setLogQuit(getConfig().getBoolean("log.quit", true));
+        settings.setLogKick(getConfig().getBoolean("log.kick", true));
+        settings.setLogDisallowedConnections(getConfig().getBoolean("log.failed-connections", true));
+        settings.setLogPlayerIp(getConfig().getBoolean("log.player-ip", true));
+        settings.setLogPlayerUUID(getConfig().getBoolean("log.player-uuid", true));
+        settings.setCheckCommandExists(getConfig().getBoolean("log.check-command-exists", false));
         settings.setFilteredCommands(new HashSet<String>());
         for (String command : getConfig().getStringList("blacklist")) {
             //lowercase all commands so it's easier to check
@@ -112,7 +126,7 @@ public class Main extends JavaPlugin {
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("reload")) {
-                    if (!sender.hasPermission("sl.reload")) {
+                    if (!sender.hasPermission("superlogger.reload")) {
                         sender.sendMessage(ChatColor.RED + "You don't have permission to do that!");
                         return true;
                     }
@@ -121,9 +135,16 @@ public class Main extends JavaPlugin {
                     sender.sendMessage(ChatColor.GREEN + "Configuration file reloaded!");
                     return true;
                 }
+                if (args[0].equalsIgnoreCase("debug")) {
+                    if (sender.hasPermission("superlogger.debug"))
+                        sender.sendMessage(ChatColor.GREEN + "Dumping debug information to server log");
+                    for (String line : getDebug()) {
+                        logger.info(line);
+                    }
+                }
             }
             //i dont even think this would ever be called, but ok.
-            sender.sendMessage(ChatColor.RED + "Invalid syntax! /sl <version, reload>");
+            sender.sendMessage(ChatColor.RED + "Invalid syntax! /sl <version, reload, debug>");
             return true;
         }
         return false;
@@ -136,7 +157,7 @@ public class Main extends JavaPlugin {
             writer.newLine();
             writer.flush();
         } catch (IOException e) {
-            logger.severe("Error writing line to log category " + category.toString());
+            logger.severe("Error writing line to " + category.getFileName() + " for LoggingCategory." + category.toString());
             e.printStackTrace();
         }
     }
@@ -144,7 +165,7 @@ public class Main extends JavaPlugin {
     public LoggerAbstraction getFile(LoggingCategory category) {
         String filename = category.getFileName();
         if (!loggers.containsKey(filename)) {
-            getLogger().info("Creating new LoggerAbstraction for category " + category.toString());
+            getLogger().info("Creating new LoggerAbstraction for  LoggingCategory." + category.toString());
             LoggerAbstraction log = new LoggerAbstraction();
             try {
                 log.setFile(new File(getDataFolder() + File.separator + "logs" + File.separator + getMonth() + File.separator + getDay() + File.separator + filename));
@@ -161,6 +182,45 @@ public class Main extends JavaPlugin {
         }
     }
 
+    public void debug(String message) {
+        if (settings.isDebug()) {
+            logger.info("[DEBUG] " + message);
+        }
+    }
+
+    public List<String> getDebug() {
+        List<String> lines = new ArrayList<String>();
+        lines.add(String.format("Running version %s with server version %s on %s %s %s", getDescription().getVersion(), getServer().getVersion(), System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch")));
+        lines.add("Settings:");
+        lines.add("Debug: " + settings.isDebug());
+        lines.add("Auto-Update: " + settings.isAutoUpdate());
+        lines.add("Update notify: " + settings.isUpdateNotify());
+        lines.add("Logging:");
+        lines.add("\tLog Event  Co-Ordinates: " + settings.isLogCoordinates());
+        lines.add("\tLog Player IP: " + settings.isLogPlayerIp());
+        lines.add("\tLog Player UUID: " + settings.isLogPlayerUUID());
+        lines.add("\tCheck if commands are real: " + settings.isCheckCommandExists());
+        lines.add("\tLog Chat: " + settings.isLogChat());
+        lines.add("\tLog Commands: " + settings.isLogCommands());
+        lines.add("\tLog Deaths: " + settings.isLogDeath());
+        lines.add("\tLog Joins: " + settings.isLogJoin());
+        lines.add("\tLog Quits: " + settings.isLogQuit());
+        lines.add("\tLog Kicks: " + settings.isLogKick());
+        lines.add("\tLog Disallowed Connections: " + settings.isLogDisallowedConnections());
+        lines.add("\tFiltered commands: ");
+        for (String filter : settings.getFilteredCommands()) {
+            lines.add("\t\t - " + filter);
+        }
+        return lines;
+    }
+
+    public boolean hasBrokenConfig() {
+        return broken;
+    }
+
+    public Updater getUpdater() {
+        return updater;
+    }
 
     public Settings getSettings() {
         return this.settings;

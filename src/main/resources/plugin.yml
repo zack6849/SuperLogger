@@ -5,4 +5,32 @@ author: zack6849
 commands:
   sl:
     description: Superlogger Utility command
-    usage: /sl <version, reload>
+    usage: /sl <version, reload, debug>
+permissions:
+  superlogger.bypass.connection:
+    description: permission to bypass connection logging
+    default: false
+  superlogger.bypass.chat:
+    description: permission to bypass chat logging
+    default: false
+  superlogger.bypass.death:
+    description: permission to bypass death logging
+    default: false
+  superlogger.bypass.command:
+    description: permission to bypass command logging
+    default: false
+  superlogger.update.notify:
+    description: permission to see when a superlogger update is availible
+    default: op
+  superlogger.bypass.*:
+    description: permission to bypass ALL logging
+    children:
+      superlogger.bypass.connection: true
+      superlogger.bypass.chat: true
+      superlogger.bypass.death: true
+      superlogger.bypass.command: true
+  superlogger.*:
+    description: super permission for superlogger, grants all permissions
+    children:
+      superlogger.bypass.*: true
+      superlogger.update.notify: true

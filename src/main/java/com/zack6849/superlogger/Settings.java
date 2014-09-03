@@ -34,6 +34,8 @@ public class Settings {
     private boolean useOldLogging;
     private boolean checkCommandExists;
     private boolean autoUpdate;
+    private boolean updateNotify;
+    private boolean debug;
     private Set<String> filteredCommands;
 
     public boolean isLogCommands() {
@@ -146,5 +148,21 @@ public class Settings {
 
     public void setAutoUpdate(boolean autoUpdate) {
         this.autoUpdate = autoUpdate;
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    public boolean isUpdateNotify() {
+        return updateNotify;
+    }
+
+    public void setUpdateNotify(boolean updateNotify) {
+        this.updateNotify = updateNotify;
     }
 }

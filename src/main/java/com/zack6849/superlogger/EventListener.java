@@ -18,7 +18,9 @@
 
 package com.zack6849.superlogger;
 
+import net.gravitydevelopment.updater.Updater;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -37,7 +39,7 @@ public class EventListener implements Listener {
      * PlayerChatEvent is 'deprecated' but quite frankly, i'm not going to go find a way to log things aysnc without breaking things, so fuck it.
      */
     public void onChat(PlayerChatEvent event) {
-        if (!plugin.getSettings().isLogChat()) {
+        if (!plugin.getSettings().isLogChat() || event.getPlayer().hasPermission("superlogger.bypass.chat")) {
             return;
         }
         LoggingCategory category = plugin.getSettings().isUseOldLogging() ? LoggingCategory.ALL : LoggingCategory.CHAT;
@@ -63,7 +65,7 @@ public class EventListener implements Listener {
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent event) {
         //if the plugin is supposed to be ignoring commands, or the command is filtered, ignore it.
-        if (!plugin.getSettings().isLogCommands() || isFiltered(event.getMessage())) {
+        if (!plugin.getSettings().isLogCommands() || isFiltered(event.getMessage()) || event.getPlayer().hasPermission("superlogger.bypass.command")) {
             return;
         }
         //if we're supposed to make sure a command is real, and this one isn't, ignore it.
@@ -93,8 +95,14 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        if (!plugin.getSettings().isLogJoin()) {
+        if (!plugin.getSettings().isLogJoin() || event.getPlayer().hasPermission("superlogger.bypasss.connection")) {
             return;
+        }
+        if (plugin.getSettings().isUpdateNotify() && !plugin.getSettings().isAutoUpdate() && plugin.getUpdater().getResult() == Updater.UpdateResult.UPDATE_AVAILABLE && event.getPlayer().hasPermission("superlogger.update.notify")) {
+            event.getPlayer().sendMessage(ChatColor.GREEN + "An update for SuperLogger is available!");
+            event.getPlayer().sendMessage(ChatColor.GREEN + "New Version: " + plugin.getUpdater().getLatestName());
+            event.getPlayer().sendMessage(ChatColor.GREEN + "Link: " + plugin.getUpdater().getLatestFileLink());
+            event.getPlayer().sendMessage(ChatColor.YELLOW + "To disable this notification, change update-notify to false in the config!");
         }
 
         LoggingCategory category = plugin.getSettings().isUseOldLogging() ? LoggingCategory.ALL : LoggingCategory.JOIN;
@@ -120,7 +128,8 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerLoginEvent event) {
-        if (!plugin.getSettings().isLogDisallowedConnections()) {
+        //this permission check won't work on certain permission managers if i recall correctly.
+        if (!plugin.getSettings().isLogDisallowedConnections() || event.getPlayer().hasPermission("superlogger.bypass.connection")) {
             return;
         }
         LoggingCategory category = plugin.getSettings().isUseOldLogging() ? LoggingCategory.ALL : LoggingCategory.FAILED_LOGIN;
@@ -145,7 +154,7 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (!plugin.getSettings().isLogQuit()) {
+        if (!plugin.getSettings().isLogQuit() || event.getPlayer().hasPermission("superlogger.bypass.connection")) {
             return;
         }
         LoggingCategory category = plugin.getSettings().isUseOldLogging() ? LoggingCategory.ALL : LoggingCategory.QUIT;
@@ -171,7 +180,7 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onPlayerKick(PlayerKickEvent event) {
-        if (!plugin.getSettings().isLogKick()) {
+        if (!plugin.getSettings().isLogKick() || event.getPlayer().hasPermission("superlogger.bypass.connection")) {
             return;
         }
         LoggingCategory category = plugin.getSettings().isUseOldLogging() ? LoggingCategory.ALL : LoggingCategory.KICK;
@@ -197,7 +206,7 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        if (!plugin.getSettings().isLogDeath()) {
+        if (!plugin.getSettings().isLogDeath() || event.getEntity().hasPermission("superlogger.bypass.death")) {
             return;
         }
         LoggingCategory category = plugin.getSettings().isUseOldLogging() ? LoggingCategory.ALL : LoggingCategory.DEATH;

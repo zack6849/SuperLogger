@@ -1,4 +1,6 @@
 auto-update: true
+update-notify: true
+debug: false
 log:
   commands: true
   #do we check if a command is even a real command before we log it?
