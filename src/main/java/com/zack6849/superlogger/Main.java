@@ -41,6 +41,7 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        loadSettings();
         getServer().getPluginManager().registerEvents(new EventListener(this), this);
         if (this.getConfig().getConfigurationSection("log") == null) {
             logger.log(Level.SEVERE, "Your configuration file is out of date, please generate a new one!");
