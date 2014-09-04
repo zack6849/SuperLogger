@@ -50,6 +50,7 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new EventListener(this), this);
         try {
             Metrics metrics = new Metrics(this);
+            metrics.start();
             logger.log(Level.INFO, "Metrics Running <3");
         } catch (IOException e) {
             logger.warning("There was an issue starting plugin metrics </3");
