@@ -126,7 +126,7 @@ public class Main extends JavaPlugin {
             double version = Double.valueOf(StringUtils.join(getServer().getVersion().split("\\(")[1].split("\\)")[0].split("MC: ")[1].split("\\."), ".", 0, 2));
             debug("Found minecraft version " + version + " from version string " + getServer().getVersion());
             //actual UUID support is only in minecraft 1.7+
-            if (version >= 1.7) {
+            if (version < 1.7) {
                 logger.warning("Player UUID Logging is enabled, but your server version doesn't have it!");
                 logger.warning("Disabling UUID Logging..");
                 getSettings().setLogPlayerUUID(false);

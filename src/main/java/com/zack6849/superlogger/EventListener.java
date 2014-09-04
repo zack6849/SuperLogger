@@ -52,7 +52,7 @@ public class EventListener implements Listener {
             line.append(String.format("(%s) ", event.getPlayer().getUniqueId().toString()));
         }
         if (plugin.getSettings().isLogPlayerIp()) {
-            line.append(String.format("from %s ", event.getPlayer().getAddress().toString().replace("/", "")));
+            line.append(String.format("from %s ", event.getPlayer().getAddress().getHostString().replace("/", "")));
         }
         if (plugin.getSettings().isLogCoordinates()) {
             Location loc = event.getPlayer().getLocation();
@@ -85,7 +85,7 @@ public class EventListener implements Listener {
             line.append(String.format("(%s) ", event.getPlayer().getUniqueId().toString()));
         }
         if (plugin.getSettings().isLogPlayerIp()) {
-            line.append(String.format("from %s ", event.getPlayer().getAddress().toString().replace("/", "")));
+            line.append(String.format("from %s ", event.getPlayer().getAddress().getHostString().replace("/", "")));
         }
         if (plugin.getSettings().isLogCoordinates()) {
             Location loc = event.getPlayer().getLocation();
@@ -128,7 +128,7 @@ public class EventListener implements Listener {
             line.append(String.format("(%s) ", event.getPlayer().getUniqueId().toString()));
         }
         if (plugin.getSettings().isLogPlayerIp()) {
-            line.append(String.format("from %s ", event.getPlayer().getAddress().toString().replace("/", "")));
+            line.append(String.format("from %s ", event.getPlayer().getAddress().getHostString().replace("/", "")));
         }
         if (plugin.getSettings().isLogCoordinates()) {
             Location loc = event.getPlayer().getLocation();
@@ -158,7 +158,7 @@ public class EventListener implements Listener {
                 line.append(String.format("(%s) ", event.getPlayer().getUniqueId().toString()));
             }
             if (plugin.getSettings().isLogPlayerIp()) {
-                line.append(String.format("from %s ", event.getPlayer().getAddress().toString().replace("/", "")));
+                line.append(String.format("from %s ", event.getPlayer().getAddress().getHostString().replace("/", "")));
             }
             line.append(String.format("was blocked from joining the game (%s) ", event.getResult().name()));
             line.append("was blocked from joining the game (").append(event.getResult().name()).append(")");
@@ -183,7 +183,7 @@ public class EventListener implements Listener {
             line.append(String.format("(%s) ", event.getPlayer().getUniqueId().toString()));
         }
         if (plugin.getSettings().isLogPlayerIp()) {
-            line.append(String.format("from %s ", event.getPlayer().getAddress().toString().replace("/", "")));
+            line.append(String.format("from %s ", event.getPlayer().getAddress().getHostString().replace("/", "")));
         }
         if (plugin.getSettings().isLogCoordinates()) {
             Location loc = event.getPlayer().getLocation();
@@ -210,7 +210,7 @@ public class EventListener implements Listener {
             line.append(String.format("(%s) ", event.getPlayer().getUniqueId().toString()));
         }
         if (plugin.getSettings().isLogPlayerIp()) {
-            line.append(String.format("from %s ", event.getPlayer().getAddress().toString().replace("/", "")));
+            line.append(String.format("from %s ", event.getPlayer().getAddress().getHostString().replace("/", "")));
         }
         if (plugin.getSettings().isLogCoordinates()) {
             Location loc = event.getPlayer().getLocation();
