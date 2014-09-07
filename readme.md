@@ -4,5 +4,7 @@ SuperLogger is a [bukkit](http://bukkit.org/) plugin focused on logging events
 What's so special about something logging events you may ask?  
 Well, we don't just log everything to one, long, hard to read file  
 We decided to categorize them, and sort them by date!  
-
+You can grab the [latest build](http://ci.notoriousdev.com/job/SuperLogger/lastSuccessfulBuild/artifact/target/SuperLogger-v1.6.jar) off of our jenkins!  
 SuperLogger is Licensed under the [GNU GPL V3](http://www.gnu.org/licenses/gpl.txt)
+
+[![Build Status](http://ci.ndev.me/job/SuperLogger/badge/icon)](http://ci.ndev.me/job/SuperLogger/)
