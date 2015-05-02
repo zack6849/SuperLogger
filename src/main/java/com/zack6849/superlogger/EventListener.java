@@ -100,7 +100,6 @@ public class EventListener implements Listener {
         if (plugin.getSettings().isUpdateNotify() && !plugin.getSettings().isAutoUpdate() && plugin.getUpdater().getResult() == Updater.UpdateResult.UPDATE_AVAILABLE && event.getPlayer().hasPermission("superlogger.update.notify")) {
             //for some stupid reason, sending those all at once upon player join causes the messages to come out of order, fuck you bukkit.
             plugin.getServer().getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable() {
-                @Override
                 public void run() {
                     event.getPlayer().sendMessage(ChatColor.YELLOW + "=====================================================");
                     event.getPlayer().sendMessage(ChatColor.GREEN + "An update for SuperLogger is available!");
@@ -130,6 +129,7 @@ public class EventListener implements Listener {
         if (plugin.getSettings().isLogPlayerIp()) {
             line.append(String.format("from %s ", event.getPlayer().getAddress().getHostString().replace("/", "")));
         }
+
         if (plugin.getSettings().isLogCoordinates()) {
             Location loc = event.getPlayer().getLocation();
             line.append(String.format("at (%s, %s, %s) in world '%s' ", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName()));
@@ -141,7 +141,6 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerLoginEvent event) {
         //this permission check won't work on certain permission managers if i recall correctly.
-        plugin.debug("Boop.");
         if (!plugin.getSettings().isLogDisallowedConnections() || event.getPlayer().hasPermission("superlogger.bypass.connection")) {
             plugin.debug("Ignoring " + event.getClass().getSimpleName());
             return;
@@ -158,7 +157,7 @@ public class EventListener implements Listener {
                 line.append(String.format("(%s) ", event.getPlayer().getUniqueId().toString()));
             }
             if (plugin.getSettings().isLogPlayerIp()) {
-                line.append(String.format("from %s ", event.getPlayer().getAddress().getHostString().replace("/", "")));
+                line.append(String.format("from %s ", event.getAddress().getHostAddress()));
             }
             line.append(String.format("was blocked from joining the game (%s) ", event.getResult().name()));
             line.append("was blocked from joining the game (").append(event.getResult().name()).append(")");
