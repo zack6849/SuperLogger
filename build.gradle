@@ -6,23 +6,18 @@ version = 'v1.7'
 
 description = "SuperLogger"
 
-sourceCompatibility = 1.5
-targetCompatibility = 1.5
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 
 
 repositories {
-        
      maven { url "http://repo.bukkit.org/content/groups/public/" }
-     maven { url "http://repo.gravitydevelopment.net" }
      maven { url "http://repo.maven.apache.org/maven2" }
-     flatDir{
-         dirs 'D:\\BuildTools\\'
-     }
 }
 dependencies {
     compile group: 'org.bukkit', name: 'bukkit', version:'1.7.9-R0.2'
-    //i'm so sorry.
-    compile name: 'spigot-1.8.8'
+    compile 'com.google.code.gson:gson:2.5'
+    compile 'commons-io:commons-io:2.4'
     testCompile group: 'junit', name: 'junit', version:'3.8.1'
 }
