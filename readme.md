@@ -10,5 +10,3 @@ SuperLogger is Licensed under the [GNU GPL V3](http://www.gnu.org/licenses/gpl.t
 For questions about the plugin's configuration, please refer to the [documentation](https://github.com/zack6849/SuperLogger/wiki)
 
 [![Build Status](http://ci.ndev.me/job/SuperLogger/badge/icon)](http://ci.ndev.me/job/SuperLogger/)
-
-If you want to edit this code yourself, you'll need to manually add a *craftbukkit or spigot jar* (not bukkit, we need access to GSON which is only in the other jars)
