@@ -21,17 +21,20 @@ package com.zack6849.superlogger;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 
 public class LoggerAbstraction {
     private BufferedWriter writer;
     private File file;
     private LoggingCategory category;
+    private int day;
 
     public File getFile() {
         return file;
     }
 
     public void setFile(File file) {
+        day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
         this.file = file;
         if (!file.exists()) {
             file.getParentFile().mkdirs();
@@ -41,6 +44,10 @@ public class LoggerAbstraction {
                 e.printStackTrace();
             }
         }
+    }
+
+    public int getDay(){
+        return day;
     }
 
     public BufferedWriter getWriter() {

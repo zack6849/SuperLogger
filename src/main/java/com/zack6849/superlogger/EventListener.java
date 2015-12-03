@@ -18,7 +18,6 @@
 
 package com.zack6849.superlogger;
 
-import net.gravitydevelopment.updater.Updater;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -97,15 +96,15 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onJoin(final PlayerJoinEvent event) {
-        if (plugin.getSettings().isUpdateNotify() && !plugin.getSettings().isAutoUpdate() && plugin.getUpdater().getResult() == Updater.UpdateResult.UPDATE_AVAILABLE && event.getPlayer().hasPermission("superlogger.update.notify")) {
+        if (plugin.getSettings().isUpdateNotify() && !plugin.getSettings().isAutoUpdate() && plugin.getUpdater().isUpdateAvailible() && event.getPlayer().hasPermission("superlogger.update.notify")) {
             //for some stupid reason, sending those all at once upon player join causes the messages to come out of order, fuck you bukkit.
             plugin.getServer().getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable() {
                 public void run() {
                     event.getPlayer().sendMessage(ChatColor.YELLOW + "=====================================================");
                     event.getPlayer().sendMessage(ChatColor.GREEN + "An update for SuperLogger is available!");
-                    event.getPlayer().sendMessage(ChatColor.GREEN + "New Version: " + plugin.getUpdater().getLatestName());
+                    event.getPlayer().sendMessage(ChatColor.GREEN + "New Version: SuperLogger v" + plugin.getUpdater().getLatestVersion());
                     event.getPlayer().sendMessage(ChatColor.GREEN + "Project Page: " + plugin.shortenUrl(plugin.getDescription().getWebsite()));
-                    event.getPlayer().sendMessage(ChatColor.GREEN + "Direct Link: " + plugin.shortenUrl(plugin.getUpdater().getLatestFileLink()));
+                    event.getPlayer().sendMessage(ChatColor.GREEN + "Direct Link: " + plugin.shortenUrl(plugin.getUpdater().getDownloadURL()));
                     event.getPlayer().sendMessage(ChatColor.YELLOW + "To disable this notification, change update-notify to false.");
                     event.getPlayer().sendMessage(ChatColor.YELLOW + "=====================================================");
                 }

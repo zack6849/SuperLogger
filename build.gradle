@@ -1,0 +1,30 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'com.zack6849'
+version = 'v1.6'
+
+description = "SuperLogger"
+
+sourceCompatibility = 1.5
+targetCompatibility = 1.5
+
+
+
+repositories {
+        
+     maven { url "http://repo.bukkit.org/content/groups/public/" }
+     maven { url "http://repo.mcstats.org/content/repositories/public" }
+     maven { url "http://repo.gravitydevelopment.net" }
+     maven { url "http://repo.maven.apache.org/maven2" }
+     flatDir{
+         dirs 'D:\\BuildTools\\'
+     }
+}
+dependencies {
+    compile group: 'org.bukkit', name: 'bukkit', version:'1.7.9-R0.2'
+    //i'm so sorry.
+    compile group: 'org.mcstats.bukkit', name: 'metrics', version:'R7'
+    compile name: 'spigot-1.8.8'
+    testCompile group: 'junit', name: 'junit', version:'3.8.1'
+}

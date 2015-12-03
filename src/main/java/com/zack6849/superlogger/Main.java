@@ -18,7 +18,6 @@
 
 package com.zack6849.superlogger;
 
-import net.gravitydevelopment.updater.Updater;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -57,11 +56,21 @@ public class Main extends JavaPlugin {
             logger.warning(e.getMessage());
             e.printStackTrace();
         }
-        if (settings.isAutoUpdate()) {
-            updater = new Updater(this, 45448, this.getFile(), Updater.UpdateType.DEFAULT, true);
-        } else {
-            updater = new Updater(this, 45448, this.getFile(), Updater.UpdateType.NO_DOWNLOAD, true);
+        updater = new Updater(this, getFile(), "super-logger");
+        updater.fetchData();
+        logger.info("Starting updater and checking for updates");
+        if(settings.isAutoUpdate() && updater.isUpdateAvailible()){
+            try {
+                logger.info("update availible, downloading.");
+                updater.updatePlugin();
+                logger.info("update complete");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            logger.info("No update availible!");
         }
+
         if (settings.isDebug()) {
             for (String line : getDebug()) {
                 debug(line);
@@ -200,9 +209,14 @@ public class Main extends JavaPlugin {
         }
     }
 
+    public int getCurrentDay(){
+        return Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+    }
+
+
     public LoggerAbstraction getFile(LoggingCategory category) {
         String filename = category.getFileName();
-        if (!loggers.containsKey(filename)) {
+        if (!loggers.containsKey(filename) || (loggers.containsKey(filename) && loggers.get(filename).getDay() != getCurrentDay())) {
             getLogger().info("Creating new LoggerAbstraction for LoggingCategory." + category.toString());
             LoggerAbstraction log = new LoggerAbstraction();
             try {
