@@ -24,7 +24,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mcstats.Metrics;
 
 import java.io.*;
 import java.net.URL;
@@ -47,15 +46,6 @@ public class Main extends JavaPlugin {
         getConfig().setDefaults(new MemoryConfiguration());
         loadSettings();
         getServer().getPluginManager().registerEvents(new EventListener(this), this);
-        try {
-            Metrics metrics = new Metrics(this);
-            metrics.start();
-            logger.log(Level.INFO, "Metrics Running <3");
-        } catch (IOException e) {
-            logger.warning("There was an issue starting plugin metrics </3");
-            logger.warning(e.getMessage());
-            e.printStackTrace();
-        }
         updater = new Updater(this, getFile(), "super-logger");
         updater.fetchData();
         logger.info("Starting updater and checking for updates");
@@ -141,6 +131,15 @@ public class Main extends JavaPlugin {
                 logger.warning("Disabling UUID Logging..");
                 getSettings().setLogPlayerUUID(false);
             }
+        }
+        if(getSettings().isUpdateNotify() || getSettings().isAutoUpdate()){
+            //refresh data every 5 minutes.
+            getServer().getScheduler().runTaskTimer(this, new Runnable() {
+                @Override
+                public void run() {
+                    updater.fetchData();
+                }
+            },0,  5 * 60 * 1000);
         }
     }
 

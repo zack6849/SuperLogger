@@ -47,6 +47,10 @@ public class Updater {
     public void fetchData(){
         String apidata = fetchContent("https://api.bukget.org/3/updates?slugs=" + slug);
         JsonParser parser = new JsonParser();
+        if(apidata.equalsIgnoreCase("nothing.")){
+            data = parser.parse("{}").getAsJsonObject();
+        }
+
         data = parser.parse(apidata).getAsJsonArray().get(0).getAsJsonObject();
     }
 
@@ -63,15 +67,23 @@ public class Updater {
     }
 
     public boolean isUpdateAvailible(){
-
+        if(!data.has("versions")){
+            return false;
+        }
         return !getLatestVersion().equalsIgnoreCase(plugin.getDescription().getVersion());
     }
 
     public String getDownloadURL(){
+        if(!data.has("versions")){
+            return "N/A";
+        }
         return data.get("versions").getAsJsonObject().get("latest").getAsJsonObject().get("download").getAsString();
     }
 
     public String getLatestVersion(){
+        if(!data.has("versions")){
+            return "N/A";
+        }
         return data.get("versions").getAsJsonObject().get("latest").getAsJsonObject().get("version").getAsString();
     }
 
@@ -79,7 +91,7 @@ public class Updater {
         try {
             return Resources.toString(new URL(url), Charsets.UTF_8);
         } catch (IOException e) {
-            e.printStackTrace();
+            plugin.getLogger().warning("Couldn't fetch data from bukkitdev API!");
         }
         return "nothing.";
     }

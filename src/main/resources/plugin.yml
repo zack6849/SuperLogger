@@ -1,6 +1,6 @@
 name: SuperLogger
 main: com.zack6849.superlogger.Main
-version: 1.6
+version: 1.7
 author: zack6849
 description: An advanced, highly configurable logging plugin
 website: http://dev.bukkit.org/server-mods/super-logger/
