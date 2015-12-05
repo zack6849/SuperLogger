@@ -36,7 +36,7 @@ public class Main extends JavaPlugin {
     private Logger logger;
     private Settings settings;
     private ConcurrentHashMap<String, LoggerAbstraction> loggers;
-    private Updater updater;
+    //private Updater updater;
 
     @Override
     public void onEnable() {
@@ -46,7 +46,7 @@ public class Main extends JavaPlugin {
         getConfig().setDefaults(new MemoryConfiguration());
         loadSettings();
         getServer().getPluginManager().registerEvents(new EventListener(this), this);
-        updater = new Updater(this, getFile(), "super-logger");
+        /*updater = new Updater(this, getFile(), "super-logger");
         updater.fetchData();
         logger.info("Starting updater and checking for updates");
         if(settings.isAutoUpdate() && updater.isUpdateAvailible()){
@@ -59,7 +59,7 @@ public class Main extends JavaPlugin {
             }
         }else{
             logger.info("No update availible!");
-        }
+        }*/
 
         if (settings.isDebug()) {
             for (String line : getDebug()) {
@@ -132,7 +132,7 @@ public class Main extends JavaPlugin {
                 getSettings().setLogPlayerUUID(false);
             }
         }
-        if(getSettings().isUpdateNotify() || getSettings().isAutoUpdate()){
+        /*if(getSettings().isUpdateNotify() || getSettings().isAutoUpdate()){
             //refresh data every 5 minutes.
             getServer().getScheduler().runTaskTimer(this, new Runnable() {
                 @Override
@@ -140,7 +140,7 @@ public class Main extends JavaPlugin {
                     updater.fetchData();
                 }
             },0,  5 * 60 * 1000);
-        }
+        }*/
     }
 
     @Override
@@ -265,9 +265,9 @@ public class Main extends JavaPlugin {
         return lines;
     }
 
-    public Updater getUpdater() {
+   /* public Updater getUpdater() {
         return updater;
-    }
+    }*/
 
     public Settings getSettings() {
         return this.settings;
