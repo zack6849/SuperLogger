@@ -96,7 +96,7 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onJoin(final PlayerJoinEvent event) {
-        /*if (plugin.getSettings().isUpdateNotify() && !plugin.getSettings().isAutoUpdate() && plugin.getUpdater().isUpdateAvailible() && event.getPlayer().hasPermission("superlogger.update.notify")) {
+        if (plugin.getSettings().isUpdateNotify() && !plugin.getSettings().isAutoUpdate() && plugin.getUpdater().isUpdateAvailible() && event.getPlayer().hasPermission("superlogger.update.notify")) {
             //for some stupid reason, sending those all at once upon player join causes the messages to come out of order, fuck you bukkit.
             plugin.getServer().getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable() {
                 public void run() {
@@ -109,7 +109,7 @@ public class EventListener implements Listener {
                     event.getPlayer().sendMessage(ChatColor.YELLOW + "=====================================================");
                 }
             }, 10L);
-        }*/
+        }
 
         if (!plugin.getSettings().isLogJoin() || event.getPlayer().hasPermission("superlogger.bypass.connection")) {
             plugin.debug("Ignoring " + event.getClass().getSimpleName());

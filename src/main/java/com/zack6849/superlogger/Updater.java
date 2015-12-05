@@ -20,6 +20,7 @@ package com.zack6849.superlogger;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.commons.io.FileUtils;
@@ -33,25 +34,25 @@ import java.net.URL;
  * Created by zack6849 on 11/30/2015.
  */
 public class Updater {
-    private String slug;
+    private int id;
     private JavaPlugin plugin;
     private File pluginFile;
     private JsonObject data;
 
-    public Updater(JavaPlugin plugin, File pluginFile, String slug){
+    public Updater(JavaPlugin plugin, File pluginFile, int id){
         this.plugin = plugin;
         this.pluginFile = pluginFile;
-        this.slug = slug;
+        this.id = id;
     }
 
     public void fetchData(){
-        String apidata = fetchContent("https://api.bukget.org/3/updates?slugs=" + slug);
+        String apidata = fetchContent("https://api.curseforge.com/servermods/files?projectIds=" + id);
         JsonParser parser = new JsonParser();
         if(apidata.equalsIgnoreCase("nothing.")){
             data = parser.parse("{}").getAsJsonObject();
         }
-
-        data = parser.parse(apidata).getAsJsonArray().get(0).getAsJsonObject();
+        JsonArray dataarray = parser.parse(apidata).getAsJsonArray();
+        data = dataarray.get(dataarray.size() - 1).getAsJsonObject();
     }
 
     public void updatePlugin() throws IOException {
@@ -67,31 +68,34 @@ public class Updater {
     }
 
     public boolean isUpdateAvailible(){
-        if(!data.has("versions")){
+        if(!data.has("fileUrl")){
             return false;
         }
-        return !getLatestVersion().equalsIgnoreCase(plugin.getDescription().getVersion());
-    }
+        Version current = new Version(plugin.getDescription().getVersion());
+        Version availible = new Version(getLatestVersion().split("v")[1]);
+        //return if the current version is smaller than the new version.
+        return current.compareTo(availible) == -1;
+        }
 
     public String getDownloadURL(){
-        if(!data.has("versions")){
+        if(!data.has("fileUrl")){
             return "N/A";
         }
-        return data.get("versions").getAsJsonObject().get("latest").getAsJsonObject().get("download").getAsString();
+        return data.get("fileUrl").getAsString();
     }
 
     public String getLatestVersion(){
-        if(!data.has("versions")){
+        if(!data.has("fileUrl")){
             return "N/A";
         }
-        return data.get("versions").getAsJsonObject().get("latest").getAsJsonObject().get("version").getAsString();
+        return data.get("name").getAsString();
     }
 
     public String fetchContent(String url){
         try {
             return Resources.toString(new URL(url), Charsets.UTF_8);
         } catch (IOException e) {
-            plugin.getLogger().warning("Couldn't fetch data from bukkitdev API!");
+            plugin.getLogger().warning("Couldn't fetch data from curse API!");
         }
         return "nothing.";
     }
