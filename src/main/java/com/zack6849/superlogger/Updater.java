@@ -50,9 +50,10 @@ public class Updater {
         JsonParser parser = new JsonParser();
         if(apidata.equalsIgnoreCase("nothing.")){
             data = parser.parse("{}").getAsJsonObject();
+        }else{
+            JsonArray dataarray = parser.parse(apidata).getAsJsonArray();
+            data = dataarray.get(dataarray.size() - 1).getAsJsonObject();
         }
-        JsonArray dataarray = parser.parse(apidata).getAsJsonArray();
-        data = dataarray.get(dataarray.size() - 1).getAsJsonObject();
     }
 
     public void updatePlugin() throws IOException {
@@ -74,7 +75,7 @@ public class Updater {
         Version current = new Version(plugin.getDescription().getVersion());
         Version availible = new Version(getLatestVersion().split("v")[1]);
         //return if the current version is smaller than the new version.
-        return current.compareTo(availible) == -1;
+        return current.compareTo(availible) != -1;
         }
 
     public String getDownloadURL(){
