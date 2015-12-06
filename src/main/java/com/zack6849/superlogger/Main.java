@@ -29,7 +29,6 @@ import java.io.*;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Main extends JavaPlugin {
@@ -49,21 +48,21 @@ public class Main extends JavaPlugin {
         updater = new Updater(this, getFile(), 45448);
         updater.fetchData();
         logger.info("Starting updater and checking for updates");
-        if(updater.isUpdateAvailible()){
-            if(settings.isAutoUpdate()){
+        if (updater.isUpdateAvailible()) {
+            if (settings.isAutoUpdate()) {
                 try {
                     updater.updatePlugin();
                     logger.info("Update complete!");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }else{
+            } else {
                 logger.info("Update available for SuperLogger is available!");
                 logger.info("The latest version is " + updater.getLatestVersion());
                 logger.info("This new update can be downloaded from here: " + shortenUrl(updater.getDownloadURL()));
             }
 
-        }else{
+        } else {
             logger.info("No update available!");
         }
 
@@ -138,14 +137,14 @@ public class Main extends JavaPlugin {
                 getSettings().setLogPlayerUUID(false);
             }
         }
-        if(getSettings().isUpdateNotify() || getSettings().isAutoUpdate()){
+        if (getSettings().isUpdateNotify() || getSettings().isAutoUpdate()) {
             //refresh data every 5 minutes.
             getServer().getScheduler().runTaskTimer(this, new Runnable() {
                 @Override
                 public void run() {
                     updater.fetchData();
                 }
-            },0,  5 * 60 * 1000);
+            }, 0, 5 * 60 * 1000);
         }
     }
 
@@ -214,7 +213,7 @@ public class Main extends JavaPlugin {
         }
     }
 
-    public int getCurrentDay(){
+    public int getCurrentDay() {
         return Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
     }
 

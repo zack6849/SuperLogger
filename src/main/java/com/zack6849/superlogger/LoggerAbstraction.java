@@ -46,7 +46,7 @@ public class LoggerAbstraction {
         }
     }
 
-    public int getDay(){
+    public int getDay() {
         return day;
     }
 

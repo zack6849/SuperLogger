@@ -39,18 +39,18 @@ public class Updater {
     private File pluginFile;
     private JsonObject data;
 
-    public Updater(JavaPlugin plugin, File pluginFile, int id){
+    public Updater(JavaPlugin plugin, File pluginFile, int id) {
         this.plugin = plugin;
         this.pluginFile = pluginFile;
         this.id = id;
     }
 
-    public void fetchData(){
+    public void fetchData() {
         String apidata = fetchContent("https://api.curseforge.com/servermods/files?projectIds=" + id);
         JsonParser parser = new JsonParser();
-        if(apidata.equalsIgnoreCase("nothing.")){
+        if (apidata.equalsIgnoreCase("nothing.")) {
             data = parser.parse("{}").getAsJsonObject();
-        }else{
+        } else {
             JsonArray dataarray = parser.parse(apidata).getAsJsonArray();
             data = dataarray.get(dataarray.size() - 1).getAsJsonObject();
         }
@@ -61,38 +61,38 @@ public class Updater {
     }
 
 
-    public JsonObject getData(){
-        if(this.data == null){
+    public JsonObject getData() {
+        if (this.data == null) {
             fetchData();
         }
         return this.data;
     }
 
-    public boolean isUpdateAvailible(){
-        if(!data.has("fileUrl")){
+    public boolean isUpdateAvailible() {
+        if (!data.has("fileUrl")) {
             return false;
         }
         Version current = new Version(plugin.getDescription().getVersion());
         Version availible = new Version(getLatestVersion().split("v")[1]);
         //return if the current version is smaller than the new version.
         return current.compareTo(availible) == -1;
-        }
+    }
 
-    public String getDownloadURL(){
-        if(!data.has("fileUrl")){
+    public String getDownloadURL() {
+        if (!data.has("fileUrl")) {
             return "N/A";
         }
         return data.get("fileUrl").getAsString();
     }
 
-    public String getLatestVersion(){
-        if(!data.has("fileUrl")){
+    public String getLatestVersion() {
+        if (!data.has("fileUrl")) {
             return "N/A";
         }
         return data.get("name").getAsString();
     }
 
-    public String fetchContent(String url){
+    public String fetchContent(String url) {
         try {
             return Resources.toString(new URL(url), Charsets.UTF_8);
         } catch (IOException e) {
