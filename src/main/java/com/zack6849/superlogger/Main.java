@@ -220,11 +220,12 @@ public class Main extends JavaPlugin {
 
     public LoggerAbstraction getFile(LoggingCategory category) {
         String filename = category.getFileName();
+        String path = getYear() + File.separator + getMonth() + File.separator + getDay() + File.separator + filename;
         if (!loggers.containsKey(filename) || (loggers.containsKey(filename) && loggers.get(filename).getDay() != getCurrentDay())) {
             getLogger().info("Creating new LoggerAbstraction for LoggingCategory." + category.toString());
             LoggerAbstraction log = new LoggerAbstraction();
             try {
-                log.setFile(new File(getDataFolder() + File.separator + "logs" + File.separator + getMonth() + File.separator + getDay() + File.separator + filename));
+                log.setFile(new File(getDataFolder() + File.separator + "logs" + File.separator + path));
                 log.setWriter(new BufferedWriter(new FileWriter(log.getFile(), true)));
                 log.setCategory(category);
             } catch (IOException e) {
@@ -282,8 +283,12 @@ public class Main extends JavaPlugin {
         return String.format("[%tm/%<td/%<ty - %<tH:%<tM:%<tS] ", new Date());
     }
 
+    private String getYear() {
+        return String.format("%tY", new Date());
+    }
+
     private String getMonth() {
-        return String.format("%tb", new Date());
+        return String.format("%tm", new Date());
     }
 
     private String getDay() {
